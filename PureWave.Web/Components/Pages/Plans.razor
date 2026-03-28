@@ -1,0 +1,86 @@
+@page "/plans"
+
+<PageTitle>PureWave | Plans</PageTitle>
+
+<section class="page-intro">
+    <span class="section-tag">Plans</span>
+    <h1>Three engagement levels, each built around technical clarity.</h1>
+    <p>
+        PureWave works as an independent consultancy, so each plan is centered on decision quality, room performance,
+        and user experience rather than equipment markup.
+    </p>
+</section>
+
+<section class="plans-grid">
+    @foreach (var plan in PureWavePlans.All)
+    {
+        <article class="plan-detail-card" id="@plan.Slug">
+            <div class="plan-header">
+                <span class="plan-accent">@plan.AccentLabel</span>
+                <h2>@plan.Name</h2>
+                <p>@plan.Tagline</p>
+            </div>
+
+            <div class="plan-meta">
+                <div>
+                    <span>Best for</span>
+                    <strong>@plan.BestFor</strong>
+                </div>
+                <div>
+                    <span>Pricing model</span>
+                    <strong>@plan.PricingModel</strong>
+                </div>
+                <div>
+                    <span>Format</span>
+                    <strong>@plan.Turnaround</strong>
+                </div>
+            </div>
+
+            <div class="plan-columns">
+                <div>
+                    <h3>Included</h3>
+                    <ul class="feature-list">
+                        @foreach (var item in plan.Deliverables)
+                        {
+                            <li>@item</li>
+                        }
+                    </ul>
+                </div>
+
+                <div>
+                    <h3>What this solves</h3>
+                    <ul class="feature-list feature-list-soft">
+                        @foreach (var item in plan.Outcomes)
+                        {
+                            <li>@item</li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </article>
+    }
+</section>
+
+<section class="comparison-band">
+    <div>
+        <span class="section-tag">How to choose</span>
+        <h2>Start with the room, not the gear list.</h2>
+    </div>
+
+    <div class="comparison-grid">
+        <article>
+            <h3>The Blueprint</h3>
+            <p>Best when you're still shaping the room, budget, or equipment path.</p>
+        </article>
+        <article>
+            <h3>The Tuning</h3>
+            <p>Best when the system already exists but the experience is not where it should be.</p>
+        </article>
+        <article>
+            <h3>The Director</h3>
+            <p>Best when the build is substantial enough that design oversight protects the outcome.</p>
+        </article>
+    </div>
+
+    <a class="button-primary" href="/intake">Continue to intake</a>
+</section>

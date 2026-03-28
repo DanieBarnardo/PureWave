@@ -1,0 +1,7 @@
+interface:
+  display_name: "PureWave Consultancy"
+  short_description: "Premium home theatre business support"
+  default_prompt: "Use $purewave-home-theatre-consultancy to help with PureWave's home theatre consultancy business."
+
+policy:
+  allow_implicit_invocation: true

@@ -1,0 +1,557 @@
+:root {
+    --pw-bg: #0d1422;
+    --pw-panel: rgba(13, 21, 35, 0.84);
+    --pw-panel-soft: rgba(255, 255, 255, 0.05);
+    --pw-border: rgba(255, 255, 255, 0.08);
+    --pw-text: #eef2f9;
+    --pw-muted: rgba(238, 242, 249, 0.72);
+    --pw-gold: #d6a167;
+    --pw-gold-deep: #9a683e;
+    --pw-blue: #7f9fd7;
+    --pw-shadow: 0 24px 70px rgba(3, 7, 14, 0.38);
+}
+
+html, body {
+    margin: 0;
+    font-family: "Aptos", "Trebuchet MS", sans-serif;
+    color: var(--pw-text);
+    background: var(--pw-bg);
+}
+
+h1, h2, h3, h4 {
+    margin: 0;
+    font-family: "Palatino Linotype", "Book Antiqua", Georgia, serif;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+}
+
+p {
+    line-height: 1.65;
+}
+
+a, .btn-link {
+    color: var(--pw-blue);
+}
+
+.button-primary,
+.button-secondary,
+button.button-secondary,
+button.button-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: 999px;
+    padding: 0.95rem 1.35rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    cursor: pointer;
+}
+
+.button-primary {
+    border: none;
+    color: #fff8f1;
+    background: linear-gradient(135deg, var(--pw-gold), var(--pw-gold-deep));
+    box-shadow: 0 18px 40px rgba(154, 104, 62, 0.28);
+}
+
+.button-secondary {
+    color: var(--pw-text);
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.button-primary:hover,
+.button-secondary:hover,
+button.button-secondary:hover,
+button.button-primary:hover {
+    transform: translateY(-1px);
+}
+
+.section-tag,
+.panel-kicker {
+    display: inline-block;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    font-size: 0.74rem;
+    color: var(--pw-gold);
+}
+
+.hero-grid {
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: 1.4rem;
+    align-items: stretch;
+}
+
+.hero-copy,
+.hero-panel-card,
+.hero-logo-card,
+.plan-preview-card,
+.plan-detail-card,
+.section-band,
+.comparison-band,
+.form-card,
+.submission-card {
+    border: 1px solid var(--pw-border);
+    background: var(--pw-panel);
+    box-shadow: var(--pw-shadow);
+    backdrop-filter: blur(18px);
+}
+
+.hero-copy {
+    padding: 2rem;
+    border-radius: 34px;
+}
+
+.hero-copy h1 {
+    margin-top: 0.7rem;
+    font-size: clamp(1.8rem, 2.2vw, 2.8rem);
+    line-height: 1.08;
+    max-width: 16ch;
+}
+
+.hero-lead {
+    max-width: 62ch;
+    margin: 1.1rem 0 0;
+    color: var(--pw-muted);
+    font-size: 1.06rem;
+}
+
+.hero-actions {
+    display: flex;
+    gap: 0.9rem;
+    flex-wrap: wrap;
+    margin-top: 1.5rem;
+}
+
+.hero-panel {
+    display: grid;
+    gap: 1rem;
+}
+
+.hero-logo-card {
+    padding: 1rem;
+    border-radius: 34px;
+    overflow: hidden;
+}
+
+.hero-logo-card img {
+    display: block;
+    width: 100%;
+    border-radius: 24px;
+}
+
+.hero-panel-card {
+    padding: 1.5rem;
+    border-radius: 28px;
+}
+
+.hero-panel-card ul,
+.feature-list {
+    margin: 1rem 0 0;
+    padding-left: 1.2rem;
+}
+
+.hero-panel-card li,
+.feature-list li {
+    margin-bottom: 0.8rem;
+    color: var(--pw-muted);
+}
+
+.stat-strip {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.9rem;
+    margin-top: 1.75rem;
+}
+
+.stat-strip div {
+    padding: 1rem;
+    border-radius: 22px;
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.stat-strip strong,
+.stat-strip span {
+    display: block;
+}
+
+.stat-strip span {
+    margin-top: 0.35rem;
+    color: var(--pw-muted);
+    font-size: 0.95rem;
+}
+
+.section-block,
+.comparison-band,
+.page-intro,
+.intake-form,
+.submission-card {
+    margin-top: 1.5rem;
+}
+
+.section-heading {
+    margin-bottom: 1rem;
+}
+
+.section-heading h2,
+.page-intro h1 {
+    margin-top: 0.55rem;
+    font-size: clamp(2rem, 3vw, 3rem);
+}
+
+.page-intro p,
+.section-heading p {
+    max-width: 68ch;
+    color: var(--pw-muted);
+}
+
+.plan-preview-grid,
+.plans-grid,
+.process-grid,
+.comparison-grid,
+.tier-grid,
+.phase-stack {
+    display: grid;
+    gap: 1rem;
+}
+
+.plan-preview-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.plan-preview-card,
+.plan-detail-card {
+    padding: 1.5rem;
+    border-radius: 28px;
+}
+
+.plan-accent {
+    display: inline-flex;
+    padding: 0.35rem 0.7rem;
+    border-radius: 999px;
+    background: rgba(214, 161, 103, 0.14);
+    color: var(--pw-gold);
+    font-size: 0.8rem;
+    margin-bottom: 1rem;
+}
+
+.plan-preview-card p,
+.plan-detail-card p,
+.comparison-grid p,
+.process-grid p {
+    color: var(--pw-muted);
+}
+
+.plan-preview-card dl {
+    margin: 1.15rem 0 0;
+    display: grid;
+    gap: 0.85rem;
+}
+
+.plan-preview-card dt,
+.plan-meta span {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: rgba(238, 242, 249, 0.55);
+}
+
+.plan-preview-card dd {
+    margin: 0.28rem 0 0;
+}
+
+.section-band,
+.comparison-band {
+    padding: 1.6rem;
+    border-radius: 30px;
+}
+
+.roadmap-summary,
+.phase-card,
+.roadmap-note,
+.roadmap-video-card {
+    border: 1px solid var(--pw-border);
+    background: var(--pw-panel);
+    box-shadow: var(--pw-shadow);
+    backdrop-filter: blur(18px);
+}
+
+.roadmap-summary,
+.phase-card,
+.roadmap-video-card {
+    padding: 1.6rem;
+    border-radius: 30px;
+}
+
+.roadmap-summary p,
+.phase-card p,
+.roadmap-note {
+    color: var(--pw-muted);
+}
+
+.phase-heading {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 1rem;
+    align-items: start;
+    margin-bottom: 1.2rem;
+}
+
+.phase-index {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 5.5rem;
+    padding: 0.8rem 1rem;
+    border-radius: 999px;
+    background: rgba(214, 161, 103, 0.14);
+    color: var(--pw-gold);
+    font-family: "Consolas", "Courier New", monospace;
+    text-transform: uppercase;
+}
+
+.tier-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.tier-card {
+    padding: 1.3rem;
+    border-radius: 24px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.tier-card h3 {
+    margin-top: 0.25rem;
+    margin-bottom: 0.75rem;
+}
+
+.tier-card strong {
+    display: block;
+    margin-top: 1rem;
+}
+
+.roadmap-note {
+    padding: 1rem 1.15rem;
+    border-radius: 20px;
+    margin-bottom: 1rem;
+    background: rgba(214, 161, 103, 0.09);
+}
+
+.roadmap-video-section {
+    margin-top: 1.5rem;
+}
+
+.roadmap-video-card {
+    overflow: hidden;
+}
+
+.roadmap-video {
+    display: block;
+    width: 100%;
+    max-height: 72vh;
+    border-radius: 22px;
+    background: #000;
+}
+
+.process-grid,
+.comparison-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.process-grid article,
+.comparison-grid article {
+    padding: 1.1rem;
+    border-radius: 22px;
+    background: var(--pw-panel-soft);
+}
+
+.process-grid span {
+    display: inline-block;
+    font-family: "Consolas", "Courier New", monospace;
+    color: var(--pw-gold);
+    margin-bottom: 0.75rem;
+}
+
+.plan-meta,
+.submission-summary {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.75rem;
+    margin: 1.2rem 0;
+}
+
+.submission-summary {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.plan-meta div,
+.submission-summary div {
+    padding: 1rem;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.plan-meta strong,
+.submission-summary strong,
+.submission-summary span {
+    display: block;
+}
+
+.plan-columns {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.feature-list-soft li {
+    color: rgba(238, 242, 249, 0.84);
+}
+
+.intake-form {
+    display: block;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.form-card {
+    display: grid;
+    gap: 1rem;
+    padding: 1.4rem;
+    border-radius: 28px;
+}
+
+.form-card-wide {
+    grid-column: span 2;
+}
+
+.form-card label {
+    display: grid;
+    gap: 0.5rem;
+    color: var(--pw-text);
+}
+
+.form-input {
+    width: 100%;
+    box-sizing: border-box;
+    border-radius: 18px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    background: rgba(6, 10, 18, 0.52);
+    color: var(--pw-text);
+    padding: 0.95rem 1rem;
+    font: inherit;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: rgba(214, 161, 103, 0.7);
+    box-shadow: 0 0 0 0.18rem rgba(214, 161, 103, 0.18);
+}
+
+.form-textarea {
+    min-height: 9rem;
+}
+
+.check-row {
+    grid-template-columns: auto 1fr;
+    align-items: start;
+}
+
+.check-row input {
+    margin-top: 0.3rem;
+}
+
+.form-tip {
+    padding: 1rem;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.form-tip p,
+.submission-card p,
+.submission-notes p {
+    color: var(--pw-muted);
+}
+
+.form-actions {
+    display: flex;
+    gap: 0.85rem;
+    flex-wrap: wrap;
+    margin-top: 1rem;
+}
+
+.submission-card {
+    padding: 1.8rem;
+    border-radius: 32px;
+}
+
+.submission-notes {
+    margin: 1rem 0 1.4rem;
+}
+
+.validation-summary,
+.validation-message {
+    color: #ffb4b4;
+}
+
+.valid.modified:not([type=checkbox]) {
+    outline: 1px solid #4fd38b;
+}
+
+.invalid {
+    outline: 1px solid #ff8181;
+}
+
+@media (max-width: 1200px) {
+    .hero-grid,
+    .plan-preview-grid,
+    .process-grid,
+    .comparison-grid,
+    .tier-grid,
+    .phase-heading,
+    .plan-columns,
+    .form-grid,
+    .plan-meta,
+    .submission-summary {
+        grid-template-columns: 1fr;
+    }
+
+    .stat-strip {
+        grid-template-columns: 1fr;
+    }
+
+    .form-card-wide {
+        grid-column: auto;
+    }
+}
+
+@media (max-width: 700px) {
+    .hero-copy,
+    .hero-panel-card,
+    .hero-logo-card,
+    .plan-preview-card,
+    .plan-detail-card,
+    .section-band,
+    .comparison-band,
+    .form-card,
+    .submission-card {
+        border-radius: 24px;
+    }
+
+    .hero-copy,
+    .plan-preview-card,
+    .plan-detail-card,
+    .section-band,
+    .comparison-band,
+    .form-card,
+    .submission-card {
+        padding: 1.2rem;
+    }
+}

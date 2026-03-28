@@ -1,0 +1,15 @@
+# Local sandbox and tool state
+.appdata/
+.dotnet/
+.nuget/
+.temp/
+.userprofile/
+
+# Visual Studio / .NET build output
+.vs/
+bin/
+obj/
+
+# User-specific files
+*.user
+*.suo

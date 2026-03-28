@@ -1,0 +1,248 @@
+@page "/intake"
+@rendermode InteractiveServer
+
+<PageTitle>PureWave | Intake Questionnaire</PageTitle>
+
+<section class="page-intro">
+    <span class="section-tag">Intake Questionnaire</span>
+    <h1>Tell PureWave about the room, the brief, and the performance you want.</h1>
+    <p>
+        This intake is designed to surface the technical constraints early, so the first consultation starts with useful context
+        instead of generic discovery.
+    </p>
+</section>
+
+@if (IsSubmitted)
+{
+    <section class="submission-card">
+        <span class="section-tag">Brief received</span>
+        <h2>Thanks, @Model.FullName.</h2>
+        <p>
+            Your intake summary is ready for review. In a production version this is where we would post the brief to a CRM,
+            email inbox, or project pipeline.
+        </p>
+
+        <div class="submission-summary">
+            <div>
+                <span>Plan fit</span>
+                <strong>@Model.InterestedPlan</strong>
+            </div>
+            <div>
+                <span>Project stage</span>
+                <strong>@Model.ProjectStage</strong>
+            </div>
+            <div>
+                <span>Budget band</span>
+                <strong>@Model.BudgetBand</strong>
+            </div>
+            <div>
+                <span>Timeline</span>
+                <strong>@Model.Timeline</strong>
+            </div>
+        </div>
+
+        <div class="submission-notes">
+            <h3>Project goals</h3>
+            <p>@Model.PrimaryGoals</p>
+            <h3>Known room details</h3>
+            <p>@Model.RoomDimensions</p>
+        </div>
+
+        <button class="button-secondary" @onclick="StartNewSubmission">Start a new intake</button>
+    </section>
+}
+else
+{
+    <EditForm Model="Model" FormName="purewave-intake" OnValidSubmit="HandleValidSubmit" class="intake-form">
+        <DataAnnotationsValidator />
+        <ValidationSummary class="validation-summary" />
+
+        <div class="form-grid">
+            <section class="form-card">
+                <h2>Contact</h2>
+
+                <label>
+                    Full name
+                    <InputText @bind-Value="Model.FullName" class="form-input" />
+                    <ValidationMessage For="@(() => Model.FullName)" />
+                </label>
+
+                <label>
+                    Email address
+                    <InputText @bind-Value="Model.EmailAddress" class="form-input" />
+                    <ValidationMessage For="@(() => Model.EmailAddress)" />
+                </label>
+
+                <label>
+                    Phone number
+                    <InputText @bind-Value="Model.PhoneNumber" class="form-input" />
+                    <ValidationMessage For="@(() => Model.PhoneNumber)" />
+                </label>
+
+                <label>
+                    Project suburb or area
+                    <InputText @bind-Value="Model.SuburbOrArea" class="form-input" />
+                    <ValidationMessage For="@(() => Model.SuburbOrArea)" />
+                </label>
+            </section>
+
+            <section class="form-card">
+                <h2>Project scope</h2>
+
+                <label>
+                    Project stage
+                    <InputSelect @bind-Value="Model.ProjectStage" class="form-input">
+                        <option value="">Select project stage</option>
+                        <option>Planning a new room</option>
+                        <option>Renovating an existing room</option>
+                        <option>Upgrading an existing system</option>
+                        <option>Need tuning and calibration only</option>
+                    </InputSelect>
+                    <ValidationMessage For="@(() => Model.ProjectStage)" />
+                </label>
+
+                <label>
+                    Which plan feels closest?
+                    <InputSelect @bind-Value="Model.InterestedPlan" class="form-input">
+                        <option value="">Select a plan</option>
+                        <option>The Blueprint</option>
+                        <option>The Tuning</option>
+                        <option>The Director</option>
+                    </InputSelect>
+                    <ValidationMessage For="@(() => Model.InterestedPlan)" />
+                </label>
+
+                <label>
+                    Room type
+                    <InputSelect @bind-Value="Model.RoomType" class="form-input">
+                        <option value="">Select room type</option>
+                        <option>Dedicated cinema room</option>
+                        <option>Multi-purpose media room</option>
+                        <option>Living room integration</option>
+                        <option>New build with room not finalised</option>
+                    </InputSelect>
+                    <ValidationMessage For="@(() => Model.RoomType)" />
+                </label>
+
+                <label>
+                    Budget band
+                    <InputSelect @bind-Value="Model.BudgetBand" class="form-input">
+                        <option value="">Select budget band</option>
+                        <option>Under R100k</option>
+                        <option>R100k - R250k</option>
+                        <option>R250k - R500k</option>
+                        <option>R500k+</option>
+                        <option>Need guidance before setting budget</option>
+                    </InputSelect>
+                    <ValidationMessage For="@(() => Model.BudgetBand)" />
+                </label>
+
+                <label>
+                    Target timeline
+                    <InputSelect @bind-Value="Model.Timeline" class="form-input">
+                        <option value="">Select timeline</option>
+                        <option>Immediately</option>
+                        <option>Within 1 to 3 months</option>
+                        <option>Within 3 to 6 months</option>
+                        <option>6 months or more</option>
+                        <option>Still exploring</option>
+                    </InputSelect>
+                    <ValidationMessage For="@(() => Model.Timeline)" />
+                </label>
+            </section>
+
+            <section class="form-card form-card-wide">
+                <h2>Technical brief</h2>
+
+                <label>
+                    Primary goals
+                    <InputTextArea @bind-Value="Model.PrimaryGoals" class="form-input form-textarea" />
+                    <ValidationMessage For="@(() => Model.PrimaryGoals)" />
+                </label>
+
+                <label>
+                    Room dimensions or room notes
+                    <InputTextArea @bind-Value="Model.RoomDimensions" class="form-input" />
+                    <ValidationMessage For="@(() => Model.RoomDimensions)" />
+                </label>
+
+                <label>
+                    Existing equipment
+                    <InputTextArea @bind-Value="Model.ExistingEquipment" class="form-input" />
+                    <ValidationMessage For="@(() => Model.ExistingEquipment)" />
+                </label>
+
+                <label>
+                    Current challenges
+                    <InputTextArea @bind-Value="Model.KeyChallenges" class="form-input" />
+                    <ValidationMessage For="@(() => Model.KeyChallenges)" />
+                </label>
+            </section>
+
+            <section class="form-card">
+                <h2>Services of interest</h2>
+
+                <label class="check-row">
+                    <InputCheckbox @bind-Value="Model.NeedsAcousticDesign" />
+                    <span>Acoustic design and treatment strategy</span>
+                </label>
+
+                <label class="check-row">
+                    <InputCheckbox @bind-Value="Model.NeedsCalibration" />
+                    <span>Calibration and DSP tuning</span>
+                </label>
+
+                <label class="check-row">
+                    <InputCheckbox @bind-Value="Model.NeedsAutomation" />
+                    <span>Automation and control design</span>
+                </label>
+
+                <label class="check-row">
+                    <InputCheckbox @bind-Value="Model.NeedsProcurementAdvice" />
+                    <span>Independent procurement advice</span>
+                </label>
+            </section>
+
+            <section class="form-card">
+                <h2>Follow-up</h2>
+
+                <label>
+                    Preferred contact method
+                    <InputSelect @bind-Value="Model.ContactPreference" class="form-input">
+                        <option value="">Select contact preference</option>
+                        <option>Email first</option>
+                        <option>Phone call</option>
+                        <option>WhatsApp</option>
+                    </InputSelect>
+                    <ValidationMessage For="@(() => Model.ContactPreference)" />
+                </label>
+
+                <div class="form-tip">
+                    <strong>What happens next</strong>
+                    <p>Once submitted, this brief can be reviewed before scheduling the consultation that best fits the project.</p>
+                </div>
+            </section>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="button-primary">Submit questionnaire</button>
+            <a class="button-secondary" href="/plans">Review plans again</a>
+        </div>
+    </EditForm>
+}
+
+@code {
+    private IntakeQuestionnaire Model { get; set; } = new();
+    private bool IsSubmitted { get; set; }
+
+    private void HandleValidSubmit()
+    {
+        IsSubmitted = true;
+    }
+
+    private void StartNewSubmission()
+    {
+        Model = new IntakeQuestionnaire();
+        IsSubmitted = false;
+    }
+}
