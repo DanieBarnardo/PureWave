@@ -1,0 +1,105 @@
+@attribute [Authorize]
+@page "/invoices/{InvoiceId:long}"
+@rendermode InteractiveServer
+@inject AdminRepository Repository
+
+<PageTitle>PureWave Admin | Invoice</PageTitle>
+
+@if (InvoiceModel is null)
+{
+    <section class="panel"><p>Loading invoice...</p></section>
+}
+else
+{
+    <section class="page-header no-print">
+        <div>
+            <span class="eyebrow">Client Invoice</span>
+            <h1>@InvoiceModel.InvoiceNumber</h1>
+            <p>Prepared for @InvoiceModel.ClientName</p>
+        </div>
+        <div class="button-row">
+            <a class="ghost-button" href="/invoices">Back to invoices</a>
+            <a class="ghost-button" href="/statements/@InvoiceModel.Id">View statement</a>
+            <button type="button" class="primary-button" onclick="window.print()">Print / Save PDF</button>
+        </div>
+    </section>
+
+    <section class="invoice-shell printable-invoice">
+        <div class="invoice-top">
+            <img src="/images/pure-wave-logo.png" alt="PureWave" />
+            <div class="invoice-meta">
+                <h1>Invoice</h1>
+                <p>Invoice No: @InvoiceModel.InvoiceNumber</p>
+                <p>Date: @InvoiceModel.InvoiceDate.ToString("dd/MM/yyyy")</p>
+                @if (InvoiceModel.DueDate.HasValue)
+                {
+                    <p>Due: @InvoiceModel.DueDate.Value.ToString("dd/MM/yyyy")</p>
+                }
+            </div>
+        </div>
+
+        <div class="invoice-contact-grid">
+            <div>
+                <h2>Bill To</h2>
+                <p>@InvoiceModel.ClientName</p>
+                <p>@InvoiceModel.ClientAddressBlock</p>
+            </div>
+            <div>
+                <h2>PureWave</h2>
+                <p>Daniel Barnardo</p>
+                <p>Email: daniebarnardo@hotmail.com</p>
+                <p>Whatsapp: 0672397864</p>
+            </div>
+        </div>
+
+        <table class="invoice-table">
+            <thead>
+                <tr>
+                    <th>Item Description</th>
+                    <th>Quantity/Hours</th>
+                    <th>Unit Price</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in InvoiceModel.Items)
+                {
+                    <tr>
+                        <td>@item.Description</td>
+                        <td>@item.Quantity @item.UnitLabel</td>
+                        <td>@Money(item.UnitPrice)</td>
+                        <td>@Money(item.LineTotal)</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <div class="invoice-footer-grid">
+            <div>
+                <h2>Payment Information</h2>
+                <p>Bank: FNB/RMB</p>
+                <p>Account Holder: Daniel Barnardo</p>
+                <p>Account Type: FNB Private Clients</p>
+                <p>Account Number: 62235345346</p>
+                <p>Branch Code: 250655</p>
+            </div>
+            <div class="invoice-totals">
+                <p><span>Subtotal</span><strong>@Money(InvoiceModel.Subtotal)</strong></p>
+                <p><span>Tax (VAT 0%)</span><strong>@Money(InvoiceModel.TaxAmount)</strong></p>
+                <p><span>Total Due</span><strong>@Money(InvoiceModel.TotalDue)</strong></p>
+            </div>
+        </div>
+    </section>
+}
+
+@code {
+    [Parameter] public long InvoiceId { get; set; }
+    private Models.InvoiceDetail? InvoiceModel { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        InvoiceModel = await Repository.GetInvoiceAsync(InvoiceId);
+    }
+
+    private static string Money(decimal amount) => $"R{amount:0.00}";
+}

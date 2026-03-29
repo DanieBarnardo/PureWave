@@ -1,0 +1,59 @@
+@attribute [Authorize]
+@page "/invoices"
+@rendermode InteractiveServer
+@inject AdminRepository Repository
+
+<PageTitle>PureWave Admin | Invoices</PageTitle>
+
+<section class="page-header">
+    <div>
+        <span class="eyebrow">Invoices</span>
+        <h1>Track invoice status, income, and outstanding balances</h1>
+    </div>
+</section>
+
+<EditForm Model="Filter" OnValidSubmit="LoadAsync" class="filters-row">
+    <label>From<InputDate @bind-Value="Filter.From" class="form-control" /></label>
+    <label>To<InputDate @bind-Value="Filter.To" class="form-control" /></label>
+    <button type="submit" class="primary-button">Apply</button>
+</EditForm>
+
+<section class="panel">
+    <div class="list-stack">
+        @foreach (var invoice in InvoicesList)
+        {
+            <article class="list-card">
+                <div>
+                    <strong>@invoice.InvoiceNumber</strong>
+                    <p>@invoice.ClientName | @invoice.ProjectName | @invoice.InvoiceDate.ToString("dd MMM yyyy")</p>
+                    <p>Total: @Money(invoice.TotalDue) | Paid: @Money(invoice.AmountPaid) | Outstanding: @Money(invoice.Outstanding)</p>
+                    <p>Status: @invoice.Status</p>
+                </div>
+                <div class="button-row">
+                    <a class="primary-button" href="/invoices/@invoice.Id">Invoice</a>
+                    <a class="ghost-button" href="/statements/@invoice.Id">Statement</a>
+                </div>
+            </article>
+        }
+    </div>
+</section>
+
+@code {
+    private InvoiceFilter Filter { get; set; } = new();
+    private List<InvoiceListItem> InvoicesList { get; set; } = [];
+
+    protected override Task OnInitializedAsync() => LoadAsync();
+
+    private async Task LoadAsync()
+    {
+        InvoicesList = (await Repository.GetInvoicesAsync(Filter.From, Filter.To)).ToList();
+    }
+
+    private static string Money(decimal amount) => $"R{amount:0.00}";
+
+    private sealed class InvoiceFilter
+    {
+        public DateOnly? From { get; set; } = DateOnly.FromDateTime(DateTime.Today.AddMonths(-3));
+        public DateOnly? To { get; set; } = DateOnly.FromDateTime(DateTime.Today);
+    }
+}

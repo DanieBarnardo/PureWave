@@ -20,11 +20,20 @@ builder.Services.AddAuthorization();
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-builder.Services.AddScoped<IIntakeSubmissionStore, FileIntakeSubmissionStore>();
+builder.Services.AddScoped<IIntakeSubmissionStore, PostgresIntakeSubmissionStore>();
+builder.Services.AddScoped<PostgresSchemaInitializer>();
 builder.Services.Configure<AdminAuthSettings>(
     builder.Configuration.GetSection(AdminAuthSettings.SectionName));
+builder.Services.Configure<PostgresSettings>(
+    builder.Configuration.GetSection(PostgresSettings.SectionName));
 
 var app = builder.Build();
+
+await using (var scope = app.Services.CreateAsyncScope())
+{
+    var initializer = scope.ServiceProvider.GetRequiredService<PostgresSchemaInitializer>();
+    await initializer.EnsureInitializedAsync();
+}
 
 if (!app.Environment.IsDevelopment())
 {
@@ -54,7 +63,7 @@ app.MapGet("/admin/intakes/download/{fileName}", async (
     }
 }).RequireAuthorization();
 
-app.MapPost("/admin/login", async (
+app.MapPost("/admin/login/submit", async (
     HttpContext context,
     IConfiguration configuration,
     CancellationToken cancellationToken) =>
@@ -85,7 +94,7 @@ app.MapPost("/admin/login", async (
     return Results.Redirect("/admin/login?error=1");
 });
 
-app.MapPost("/admin/logout", async (HttpContext context) =>
+app.MapPost("/admin/logout/submit", async (HttpContext context) =>
 {
     await context.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
     return Results.Redirect("/admin/login");

@@ -1,0 +1,62 @@
+@attribute [Authorize]
+@page "/"
+@rendermode InteractiveServer
+@inject AdminRepository Repository
+
+<PageTitle>PureWave Admin | Dashboard</PageTitle>
+
+<section class="page-header">
+    <div>
+        <span class="eyebrow">Dashboard</span>
+        <h1>Business operations at a glance</h1>
+    </div>
+</section>
+
+<EditForm Model="Filters" OnValidSubmit="ReloadAsync" class="filters-row">
+    <label>
+        From
+        <InputDate @bind-Value="Filters.From" class="form-control" />
+    </label>
+    <label>
+        To
+        <InputDate @bind-Value="Filters.To" class="form-control" />
+    </label>
+    <button type="submit" class="primary-button">Refresh</button>
+</EditForm>
+
+@if (Snapshot is null)
+{
+    <section class="panel"><p>Loading dashboard...</p></section>
+}
+else
+{
+    <section class="stats-grid">
+        <article class="stat-card"><span>Clients</span><strong>@Snapshot.ClientCount</strong></article>
+        <article class="stat-card"><span>Intakes</span><strong>@Snapshot.IntakeCount</strong></article>
+        <article class="stat-card"><span>Active Projects</span><strong>@Snapshot.ActiveProjectCount</strong></article>
+        <article class="stat-card"><span>Outstanding</span><strong>@Money(Snapshot.OutstandingAmount)</strong></article>
+        <article class="stat-card"><span>Income</span><strong>@Money(Snapshot.IncomeForPeriod)</strong></article>
+        <article class="stat-card"><span>Expenses</span><strong>@Money(Snapshot.ExpensesForPeriod)</strong></article>
+        <article class="stat-card"><span>Net Income</span><strong>@Money(Snapshot.NetIncomeForPeriod)</strong></article>
+    </section>
+}
+
+@code {
+    private DashboardFilter Filters { get; set; } = new();
+    private DashboardSnapshot? Snapshot { get; set; }
+
+    protected override Task OnInitializedAsync() => ReloadAsync();
+
+    private async Task ReloadAsync()
+    {
+        Snapshot = await Repository.GetDashboardAsync(Filters.From, Filters.To);
+    }
+
+    private static string Money(decimal amount) => $"R{amount:0.00}";
+
+    private sealed class DashboardFilter
+    {
+        public DateOnly? From { get; set; } = DateOnly.FromDateTime(DateTime.Today.AddDays(-30));
+        public DateOnly? To { get; set; } = DateOnly.FromDateTime(DateTime.Today);
+    }
+}

@@ -1,0 +1,65 @@
+@attribute [Authorize]
+@page "/projects/new"
+@rendermode InteractiveServer
+@inject AdminRepository Repository
+@inject NavigationManager Nav
+
+<PageTitle>PureWave Admin | New Project</PageTitle>
+
+<section class="page-header">
+    <div>
+        <span class="eyebrow">New Project</span>
+        <h1>Create a project and start tracking work</h1>
+    </div>
+    <div class="button-row">
+        <a class="ghost-button" href="/projects">Back to projects</a>
+    </div>
+</section>
+
+<section class="panel">
+    <EditForm Model="Editor" OnValidSubmit="SaveAsync" class="editor-form">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+        <label>
+            Client
+            <InputSelect @bind-Value="Editor.ClientId" class="form-control">
+                <option value="0">Select client</option>
+                @foreach (var client in ClientsList)
+                {
+                    <option value="@client.Id">@client.FullName</option>
+                }
+            </InputSelect>
+        </label>
+        <label>Name<InputText @bind-Value="Editor.Name" class="form-control" /></label>
+        <label>Description<InputTextArea @bind-Value="Editor.Description" class="form-control textarea" /></label>
+        <label>Status<InputSelect @bind-Value="Editor.Status" class="form-control">
+            <option value="Active">Active</option>
+            <option value="Closed">Closed</option>
+            <option value="Invoiced">Invoiced</option>
+            <option value="Paid">Paid</option>
+            <option value="Cancelled">Cancelled</option>
+        </InputSelect></label>
+        <label>Start date<InputDate @bind-Value="Editor.StartDate" class="form-control" /></label>
+        <label>Due date<InputDate @bind-Value="Editor.DueDate" class="form-control" /></label>
+        <div class="button-row">
+            <button type="submit" class="primary-button">Create project</button>
+            <a class="ghost-button" href="/projects">Cancel</a>
+        </div>
+    </EditForm>
+</section>
+
+@code {
+    private List<ClientRecord> ClientsList { get; set; } = [];
+    private ProjectRecord Editor { get; set; } = new() { Status = "Active" };
+
+    protected override async Task OnInitializedAsync()
+    {
+        ClientsList = (await Repository.GetClientsAsync()).ToList();
+    }
+
+    private async Task SaveAsync()
+    {
+        var projectId = await Repository.SaveProjectAsync(Editor);
+        Nav.NavigateTo($"/projects/{projectId}");
+    }
+}

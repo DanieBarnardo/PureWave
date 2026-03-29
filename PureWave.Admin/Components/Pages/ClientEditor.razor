@@ -1,0 +1,78 @@
+@attribute [Authorize]
+@page "/clients/new"
+@page "/clients/{ClientId:long}"
+@rendermode InteractiveServer
+@inject AdminRepository Repository
+@inject NavigationManager Nav
+
+<PageTitle>PureWave Admin | Client</PageTitle>
+
+<section class="page-header">
+    <div>
+        <span class="eyebrow">Client Editor</span>
+        <h1>@(Editor.Id == 0 ? "Add client" : "Edit client")</h1>
+    </div>
+    <div class="button-row">
+        <a class="ghost-button" href="/clients">Back to clients</a>
+    </div>
+</section>
+
+<section class="panel">
+    <EditForm Model="Editor" OnValidSubmit="SaveAsync" class="editor-form">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+        <label>Full name<InputText @bind-Value="Editor.FullName" class="form-control" /></label>
+        <label>Email<InputText @bind-Value="Editor.EmailAddress" class="form-control" /></label>
+        <label>Phone<InputText @bind-Value="Editor.PhoneNumber" class="form-control" /></label>
+        <label>Address line 1<InputText @bind-Value="Editor.AddressLine1" class="form-control" /></label>
+        <label>Address line 2<InputText @bind-Value="Editor.AddressLine2" class="form-control" /></label>
+        <label>Suburb<InputText @bind-Value="Editor.Suburb" class="form-control" /></label>
+        <label>City<InputText @bind-Value="Editor.City" class="form-control" /></label>
+        <label>Postal code<InputText @bind-Value="Editor.PostalCode" class="form-control" /></label>
+        <label>Notes<InputTextArea @bind-Value="Editor.Notes" class="form-control textarea" /></label>
+        <div class="button-row">
+            <button type="submit" class="primary-button">Save client</button>
+            <a class="ghost-button" href="/clients">Cancel</a>
+        </div>
+    </EditForm>
+</section>
+
+@code {
+    [Parameter] public long? ClientId { get; set; }
+
+    private List<ClientRecord> ClientsList { get; set; } = [];
+    private ClientRecord Editor { get; set; } = new();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        ClientsList = (await Repository.GetClientsAsync()).ToList();
+        if (ClientId is null)
+        {
+            Editor = new ClientRecord();
+            return;
+        }
+
+        var client = ClientsList.FirstOrDefault(x => x.Id == ClientId.Value);
+        Editor = client is null
+            ? new ClientRecord()
+            : new ClientRecord
+            {
+                Id = client.Id,
+                FullName = client.FullName,
+                EmailAddress = client.EmailAddress,
+                PhoneNumber = client.PhoneNumber,
+                AddressLine1 = client.AddressLine1,
+                AddressLine2 = client.AddressLine2,
+                Suburb = client.Suburb,
+                City = client.City,
+                PostalCode = client.PostalCode,
+                Notes = client.Notes
+            };
+    }
+
+    private async Task SaveAsync()
+    {
+        await Repository.SaveClientAsync(Editor);
+        Nav.NavigateTo("/clients");
+    }
+}

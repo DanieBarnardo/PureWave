@@ -1,0 +1,36 @@
+@page "/login"
+@inject NavigationManager NavigationManager
+
+<PageTitle>PureWave Admin | Login</PageTitle>
+
+<section class="login-page">
+    <div class="login-card">
+        <img class="login-logo" src="/images/pure-wave-logo.png" alt="PureWave" />
+        <span class="eyebrow">Admin Access</span>
+        <h1>Sign in to manage PureWave operations</h1>
+
+        @if (HasError)
+        {
+            <div class="alert-banner">Login failed. Please check your credentials.</div>
+        }
+
+        <form method="post" action="/login/submit" class="editor-form">
+            <label>
+                Username
+                <input class="form-control" type="text" name="username" autocomplete="username" />
+            </label>
+
+            <label>
+                Password
+                <input class="form-control" type="password" name="password" autocomplete="current-password" />
+            </label>
+
+            <button type="submit" class="primary-button">Sign in</button>
+        </form>
+    </div>
+</section>
+
+@code {
+    private bool HasError =>
+        NavigationManager.ToAbsoluteUri(NavigationManager.Uri).Query.Contains("error=1", StringComparison.OrdinalIgnoreCase);
+}

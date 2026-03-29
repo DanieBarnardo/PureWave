@@ -1,0 +1,65 @@
+@attribute [Authorize]
+@page "/intakes"
+@rendermode InteractiveServer
+@inject AdminRepository Repository
+@inject NavigationManager Nav
+
+<PageTitle>PureWave Admin | Intakes</PageTitle>
+
+<section class="page-header">
+    <div>
+        <span class="eyebrow">Intakes</span>
+        <h1>Review new enquiry submissions</h1>
+    </div>
+</section>
+
+@if (!string.IsNullOrWhiteSpace(Message))
+{
+    <div class="alert-banner">@Message</div>
+}
+
+<section class="panel">
+    <div class="list-stack">
+        @foreach (var intake in IntakesList)
+        {
+            <article class="list-card wide-card">
+                <div>
+                    <strong>@intake.FullName</strong>
+                    <p>@intake.SubmittedAt.ToString("dd MMM yyyy HH:mm") | @intake.InterestedPlan | @intake.BudgetBand</p>
+                    <p>@intake.EmailAddress | @intake.PhoneNumber | @intake.SuburbOrArea</p>
+                    <p>@intake.PrimaryGoals</p>
+                    @if (intake.ClientId.HasValue)
+                    {
+                        <p><strong>Linked client:</strong> #@intake.ClientId</p>
+                    }
+                </div>
+                <div class="button-row">
+                    @if (!intake.ClientId.HasValue)
+                    {
+                        <button class="primary-button" @onclick="() => CreateClientAsync(intake.Id)">Create client</button>
+                    }
+                    else
+                    {
+                        <a class="ghost-button" href="/clients">View clients</a>
+                    }
+                </div>
+            </article>
+        }
+    </div>
+</section>
+
+@code {
+    private List<IntakeRecord> IntakesList { get; set; } = [];
+    private string? Message { get; set; }
+
+    protected override Task OnInitializedAsync() => LoadAsync();
+
+    private async Task LoadAsync() => IntakesList = (await Repository.GetIntakesAsync()).ToList();
+
+    private async Task CreateClientAsync(long intakeId)
+    {
+        var clientId = await Repository.CreateClientFromIntakeAsync(intakeId);
+        Message = $"Client #{clientId} created from intake.";
+        await LoadAsync();
+    }
+}

@@ -1,0 +1,215 @@
+@attribute [Authorize]
+@page "/projects/{ProjectId:long}"
+@rendermode InteractiveServer
+@inject AdminRepository Repository
+@inject NavigationManager Nav
+
+<PageTitle>PureWave Admin | Project</PageTitle>
+
+@if (Project is null)
+{
+    <section class="panel"><p>Loading project...</p></section>
+}
+else
+{
+    <section class="page-header">
+        <div>
+            <span class="eyebrow">Project Detail</span>
+            <h1>@Project.Name</h1>
+        </div>
+        <div class="button-row">
+            <button class="ghost-button" @onclick="SaveProjectAsync">Save project</button>
+            <button class="primary-button" @onclick="CreateInvoiceAsync">Create invoice</button>
+        </div>
+    </section>
+
+    <section class="panel">
+        <h2>Project settings</h2>
+        <EditForm Model="Project" OnValidSubmit="SaveProjectAsync" class="editor-form">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+            <label>Name<InputText @bind-Value="Project.Name" class="form-control" /></label>
+            <label>Description<InputTextArea @bind-Value="Project.Description" class="form-control textarea" /></label>
+            <label>Status<InputSelect @bind-Value="Project.Status" class="form-control">
+                @foreach (var status in ProjectStates)
+                {
+                    <option value="@status">@status</option>
+                }
+            </InputSelect></label>
+            <label>Start date<InputDate @bind-Value="Project.StartDate" class="form-control" /></label>
+            <label>Due date<InputDate @bind-Value="Project.DueDate" class="form-control" /></label>
+        </EditForm>
+    </section>
+
+    <section class="panel">
+        <h2>Financial status</h2>
+        <div class="stats-grid financial-stats">
+            <article class="stat-card">
+                <span>Project state</span>
+                <strong>@Project.Status</strong>
+            </article>
+            <article class="stat-card">
+                <span>Invoiced</span>
+                <strong>@Money(Project.TotalInvoiced)</strong>
+            </article>
+            <article class="stat-card">
+                <span>Outstanding</span>
+                <strong>@Money(Project.OutstandingAmount)</strong>
+            </article>
+        </div>
+        <div class="list-card wide-card financial-summary">
+            <div>
+                <strong>Payments</strong>
+                <p>Paid so far: @Money(Project.AmountPaid)</p>
+                <p>Invoices raised: @Project.InvoiceCount</p>
+                @if (Project.LatestInvoiceId.HasValue)
+                {
+                    <p>Latest invoice: @Project.LatestInvoiceNumber (@Project.LatestInvoiceStatus)</p>
+                }
+                else
+                {
+                    <p>No invoices have been created for this project yet.</p>
+                }
+            </div>
+            @if (Project.LatestInvoiceId.HasValue)
+            {
+                <div class="button-row">
+                    <a class="ghost-button" href="/invoices/@Project.LatestInvoiceId.Value">Invoice</a>
+                    <a class="ghost-button" href="/statements/@Project.LatestInvoiceId.Value">Statement</a>
+                </div>
+            }
+        </div>
+    </section>
+
+    <section class="panel">
+        <h2>Project items</h2>
+        <div class="grid-wrap">
+            <table class="data-grid project-items-grid">
+                <thead>
+                    <tr>
+                        <th>Category</th>
+                        <th>Description</th>
+                        <th>Qty</th>
+                        <th>Unit</th>
+                        <th>Cost</th>
+                        <th>Billable</th>
+                        <th>Incurred</th>
+                        <th>Notes</th>
+                        <th>Total</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Items)
+                    {
+                        <tr>
+                            <td>
+                                <InputSelect @bind-Value="item.ItemCategory" class="form-control grid-input">
+                                    @foreach (var category in ItemCategories)
+                                    {
+                                        <option value="@category">@category</option>
+                                    }
+                                </InputSelect>
+                            </td>
+                            <td><InputText @bind-Value="item.Description" class="form-control grid-input" /></td>
+                            <td><InputNumber @bind-Value="item.Quantity" class="form-control grid-input" /></td>
+                            <td><InputText @bind-Value="item.UnitLabel" class="form-control grid-input" /></td>
+                            <td><InputNumber @bind-Value="item.CostAmount" class="form-control grid-input" /></td>
+                            <td><InputNumber @bind-Value="item.BillableAmount" class="form-control grid-input" /></td>
+                            <td><InputDate @bind-Value="item.IncurredOn" class="form-control grid-input" /></td>
+                            <td><InputText @bind-Value="item.Notes" class="form-control grid-input" /></td>
+                            <td>@Money(item.BillableAmount * item.Quantity)</td>
+                            <td>
+                                <div class="button-row grid-actions">
+                                    <button type="button" class="grid-button" @onclick="() => SaveItemAsync(item)">Save</button>
+                                    <button type="button" class="grid-button grid-button-danger" @onclick="() => DeleteItemAsync(item.Id)">Del</button>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                    <tr class="new-item-row">
+                        <td>
+                            <InputSelect @bind-Value="NewItem.ItemCategory" class="form-control grid-input">
+                                @foreach (var category in ItemCategories)
+                                {
+                                    <option value="@category">@category</option>
+                                }
+                            </InputSelect>
+                        </td>
+                        <td><InputText @bind-Value="NewItem.Description" class="form-control grid-input" /></td>
+                        <td><InputNumber @bind-Value="NewItem.Quantity" class="form-control grid-input" /></td>
+                        <td><InputText @bind-Value="NewItem.UnitLabel" class="form-control grid-input" /></td>
+                        <td><InputNumber @bind-Value="NewItem.CostAmount" class="form-control grid-input" /></td>
+                        <td><InputNumber @bind-Value="NewItem.BillableAmount" class="form-control grid-input" /></td>
+                        <td><InputDate @bind-Value="NewItem.IncurredOn" class="form-control grid-input" /></td>
+                        <td><InputText @bind-Value="NewItem.Notes" class="form-control grid-input" /></td>
+                        <td>@Money(NewItem.BillableAmount * NewItem.Quantity)</td>
+                        <td>
+                            <button type="button" class="grid-button grid-button-primary" @onclick="SaveNewItemAsync">Add</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+}
+
+@code {
+    [Parameter] public long ProjectId { get; set; }
+    private ProjectRecord? Project { get; set; }
+    private List<ProjectItemRecord> Items { get; set; } = [];
+    private ProjectItemRecord NewItem { get; set; } = new() { ItemCategory = "Consultancy" };
+    private static readonly string[] ProjectStates = ["Active", "Closed", "Invoiced", "Paid", "Cancelled"];
+    private static readonly string[] ItemCategories = ["Consultancy", "Labor", "Parts", "Material"];
+
+    protected override async Task OnParametersSetAsync()
+    {
+        Project = await Repository.GetProjectAsync(ProjectId);
+        Items = (await Repository.GetProjectItemsAsync(ProjectId)).ToList();
+        ResetNewItem();
+    }
+
+    private async Task SaveProjectAsync()
+    {
+        if (Project is null) return;
+        await Repository.SaveProjectAsync(Project);
+    }
+
+    private async Task SaveItemAsync(ProjectItemRecord item)
+    {
+        item.ProjectId = ProjectId;
+        await Repository.SaveProjectItemAsync(item);
+        Items = (await Repository.GetProjectItemsAsync(ProjectId)).ToList();
+    }
+
+    private async Task SaveNewItemAsync()
+    {
+        NewItem.ProjectId = ProjectId;
+        await Repository.SaveProjectItemAsync(NewItem);
+        Items = (await Repository.GetProjectItemsAsync(ProjectId)).ToList();
+        ResetNewItem();
+    }
+
+    private async Task DeleteItemAsync(long id)
+    {
+        await Repository.DeleteProjectItemAsync(id);
+        Items = (await Repository.GetProjectItemsAsync(ProjectId)).ToList();
+    }
+
+    private async Task CreateInvoiceAsync()
+    {
+        var invoiceId = await Repository.CreateInvoiceFromProjectAsync(ProjectId);
+        Nav.NavigateTo($"/invoices/{invoiceId}");
+    }
+
+    private void ResetNewItem() => NewItem = new ProjectItemRecord
+    {
+        ProjectId = ProjectId,
+        ItemCategory = "Consultancy",
+        IncurredOn = DateOnly.FromDateTime(DateTime.Today),
+        Quantity = 1,
+        UnitLabel = "Hr"
+    };
+
+    private static string Money(decimal amount) => $"R{amount:0.00}";
+}

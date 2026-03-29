@@ -1,0 +1,78 @@
+@attribute [Authorize]
+@page "/projects"
+@rendermode InteractiveServer
+@inject AdminRepository Repository
+@using Microsoft.AspNetCore.Components
+
+<PageTitle>PureWave Admin | Projects</PageTitle>
+
+<section class="page-header">
+    <div>
+        <span class="eyebrow">Projects</span>
+        <h1>@(ClientLabel is null ? "Track consultancy work and project state" : $"Projects for {ClientLabel}")</h1>
+    </div>
+    <div class="button-row">
+        <a class="primary-button" href="/projects/new">New project</a>
+    </div>
+</section>
+
+<EditForm Model="Filter" OnValidSubmit="LoadAsync" class="filters-row">
+    <label>
+        State
+        <InputSelect @bind-Value="Filter.Status" class="form-control">
+            <option value="">All states</option>
+            @foreach (var state in ProjectStates)
+            {
+                <option value="@state">@state</option>
+            }
+        </InputSelect>
+    </label>
+    <button type="submit" class="primary-button">Apply</button>
+</EditForm>
+
+<section class="panel">
+    <h2>Projects</h2>
+    <div class="list-stack">
+        @foreach (var project in ProjectsList)
+        {
+            <article class="list-card">
+                <div>
+                    <strong>@project.Name</strong>
+                    <p>@project.ClientName | @project.Status</p>
+                    <p>Cost: @Money(project.TotalCost) | Billable: @Money(project.TotalBillable)</p>
+                </div>
+                <a class="primary-button" href="/projects/@project.Id">Open</a>
+            </article>
+        }
+    </div>
+</section>
+
+@code {
+    [SupplyParameterFromQuery(Name = "clientId")]
+    public long? ClientId { get; set; }
+
+    private List<ProjectListItem> ProjectsList { get; set; } = [];
+    private List<ClientRecord> ClientsList { get; set; } = [];
+    private ProjectFilter Filter { get; set; } = new();
+    private static readonly string[] ProjectStates = ["Active", "Closed", "Invoiced", "Paid", "Cancelled"];
+    private string? ClientLabel { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        ClientsList = (await Repository.GetClientsAsync()).ToList();
+        await LoadAsync();
+    }
+
+    private async Task LoadAsync()
+    {
+        ClientLabel = ClientsList.FirstOrDefault(x => x.Id == ClientId)?.FullName;
+        ProjectsList = (await Repository.GetProjectsAsync(Filter.Status, ClientId)).ToList();
+    }
+
+    private static string Money(decimal amount) => $"R{amount:0.00}";
+
+    private sealed class ProjectFilter
+    {
+        public string Status { get; set; } = string.Empty;
+    }
+}

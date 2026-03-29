@@ -8,7 +8,7 @@
     <span class="section-tag">Admin</span>
     <h1>Saved intake submissions</h1>
     <p>
-        This page reads the intake folder used by the website and lets you download the raw JSON submissions directly from the app.
+        This page reads the PostgreSQL intake table used by the website and lets you download each submission as JSON directly from the app.
     </p>
 </section>
 
@@ -36,7 +36,7 @@ else
             <span>saved intake submissions</span>
         </div>
 
-        <form method="post" action="/admin/logout" class="admin-actions">
+        <form method="post" action="/admin/logout/submit" class="admin-actions">
             <button type="submit" class="button-secondary">Sign out</button>
         </form>
 
@@ -79,6 +79,11 @@ else
 
     private static string FormatSize(long bytes)
     {
+        if (bytes <= 0)
+        {
+            return "-";
+        }
+
         const double kb = 1024;
         if (bytes < kb)
         {

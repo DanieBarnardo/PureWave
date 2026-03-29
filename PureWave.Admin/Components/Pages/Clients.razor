@@ -1,0 +1,83 @@
+@attribute [Authorize]
+@page "/clients"
+@rendermode InteractiveServer
+@inject AdminRepository Repository
+
+<PageTitle>PureWave Admin | Clients</PageTitle>
+
+<section class="page-header">
+    <div>
+        <span class="eyebrow">Clients</span>
+        <h1>Client overview</h1>
+    </div>
+    <div class="button-row">
+        <a class="primary-button" href="/clients/new">Add client</a>
+    </div>
+</section>
+
+<section class="panel">
+    <h2>Clients</h2>
+    @if (!string.IsNullOrWhiteSpace(Message))
+    {
+        <div class="alert-banner">@Message</div>
+    }
+    <div class="grid-wrap">
+        <table class="data-grid compact-grid">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Area</th>
+                    <th>Projects</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var client in ClientsList)
+                {
+                    <tr>
+                        <td>@client.FullName</td>
+                        <td>@client.EmailAddress</td>
+                        <td>@client.PhoneNumber</td>
+                        <td>@Area(client)</td>
+                        <td>
+                            <a class="grid-button" href="/projects?clientId=@client.Id">Projects</a>
+                        </td>
+                        <td>
+                            <div class="button-row grid-actions">
+                                <a class="grid-button" href="/clients/@client.Id">Edit</a>
+                                <button type="button" class="grid-button grid-button-danger" @onclick="() => DeleteAsync(client.Id)">Del</button>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</section>
+
+@code {
+    private List<ClientRecord> ClientsList { get; set; } = [];
+    private string? Message { get; set; }
+
+    protected override Task OnInitializedAsync() => LoadAsync();
+
+    private async Task LoadAsync()
+    {
+        ClientsList = (await Repository.GetClientsAsync()).ToList();
+    }
+
+    private async Task DeleteAsync(long id)
+    {
+        await Repository.DeleteClientAsync(id);
+        Message = "Client deleted.";
+        await LoadAsync();
+    }
+
+    private static string Area(ClientRecord client)
+    {
+        var parts = new[] { client.Suburb, client.City }.Where(static x => !string.IsNullOrWhiteSpace(x));
+        return string.Join(", ", parts);
+    }
+}

@@ -1,0 +1,148 @@
+@attribute [Authorize]
+@page "/statements/{InvoiceId:long}"
+@rendermode InteractiveServer
+@inject AdminRepository Repository
+
+<PageTitle>PureWave Admin | Statement</PageTitle>
+
+@if (StatementModel is null)
+{
+    <section class="panel"><p>Loading statement...</p></section>
+}
+else
+{
+    <section class="page-header no-print">
+        <div>
+            <span class="eyebrow">Statement</span>
+            <h1>@StatementModel.InvoiceNumber</h1>
+            <p>Payments and outstanding balance for @StatementModel.ClientName</p>
+        </div>
+        <div class="button-row">
+            <a class="ghost-button" href="/invoices">Back to invoices</a>
+            <a class="ghost-button" href="/invoices/@StatementModel.Id">View invoice</a>
+            <button type="button" class="primary-button" onclick="window.print()">Print / Save PDF</button>
+        </div>
+    </section>
+
+    <section class="invoice-shell printable-invoice">
+        <div class="invoice-top">
+            <img src="/images/pure-wave-logo.png" alt="PureWave" />
+            <div class="invoice-meta">
+                <h1>Statement</h1>
+                <p>Invoice No: @StatementModel.InvoiceNumber</p>
+                <p>Date: @StatementModel.InvoiceDate.ToString("dd/MM/yyyy")</p>
+                @if (StatementModel.DueDate.HasValue)
+                {
+                    <p>Due: @StatementModel.DueDate.Value.ToString("dd/MM/yyyy")</p>
+                }
+                <p>Status: @StatementModel.Status</p>
+            </div>
+        </div>
+
+        <div class="invoice-contact-grid">
+            <div>
+                <h2>Bill To</h2>
+                <p>@StatementModel.ClientName</p>
+                <p>@StatementModel.ClientAddressBlock</p>
+            </div>
+            <div>
+                <h2>PureWave</h2>
+                <p>Daniel Barnardo</p>
+                <p>Email: daniebarnardo@hotmail.com</p>
+                <p>Whatsapp: 0672397864</p>
+            </div>
+        </div>
+
+        <table class="invoice-table">
+            <thead>
+                <tr>
+                    <th>Item Description</th>
+                    <th>Quantity/Hours</th>
+                    <th>Unit Price</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in StatementModel.Items)
+                {
+                    <tr>
+                        <td>@item.Description</td>
+                        <td>@item.Quantity @item.UnitLabel</td>
+                        <td>@Money(item.UnitPrice)</td>
+                        <td>@Money(item.LineTotal)</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <div class="invoice-footer-grid">
+            <div>
+                <h2>Payment Information</h2>
+                <p>Bank: FNB/RMB</p>
+                <p>Account Holder: Daniel Barnardo</p>
+                <p>Account Type: FNB Private Clients</p>
+                <p>Account Number: 62235345346</p>
+                <p>Branch Code: 250655</p>
+            </div>
+            <div class="invoice-totals">
+                <p><span>Subtotal</span><strong>@Money(StatementModel.Subtotal)</strong></p>
+                <p><span>Tax (VAT 0%)</span><strong>@Money(StatementModel.TaxAmount)</strong></p>
+                <p><span>Total Due</span><strong>@Money(StatementModel.TotalDue)</strong></p>
+                <p><span>Paid</span><strong>@Money(StatementModel.AmountPaid)</strong></p>
+                <p><span>Outstanding</span><strong>@Money(StatementModel.Outstanding)</strong></p>
+            </div>
+        </div>
+    </section>
+
+    <section class="two-column no-print">
+        <section class="panel">
+            <h2>Add payment</h2>
+            <EditForm Model="Payment" OnValidSubmit="SavePaymentAsync" class="editor-form">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+                <label>Payment date<InputDate @bind-Value="Payment.PaymentDate" class="form-control" /></label>
+                <label>Amount<InputNumber @bind-Value="Payment.Amount" class="form-control" /></label>
+                <label>Reference<InputText @bind-Value="Payment.Reference" class="form-control" /></label>
+                <label>Notes<InputTextArea @bind-Value="Payment.Notes" class="form-control textarea" /></label>
+                <button type="submit" class="primary-button">Record payment</button>
+            </EditForm>
+        </section>
+
+        <section class="panel">
+            <h2>Payments</h2>
+            <div class="list-stack">
+                @foreach (var payment in StatementModel.Payments)
+                {
+                    <article class="list-card">
+                        <div>
+                            <strong>@Money(payment.Amount)</strong>
+                            <p>@payment.PaymentDate.ToString("dd MMM yyyy") | @payment.Reference</p>
+                            <p>@payment.Notes</p>
+                        </div>
+                    </article>
+                }
+            </div>
+        </section>
+    </section>
+}
+
+@code {
+    [Parameter] public long InvoiceId { get; set; }
+    private Models.InvoiceDetail? StatementModel { get; set; }
+    private InvoicePaymentRecord Payment { get; set; } = new();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        StatementModel = await Repository.GetInvoiceAsync(InvoiceId);
+        Payment = new InvoicePaymentRecord { InvoiceId = InvoiceId, PaymentDate = DateOnly.FromDateTime(DateTime.Today) };
+    }
+
+    private async Task SavePaymentAsync()
+    {
+        await Repository.AddPaymentAsync(InvoiceId, Payment);
+        StatementModel = await Repository.GetInvoiceAsync(InvoiceId);
+        Payment = new InvoicePaymentRecord { InvoiceId = InvoiceId, PaymentDate = DateOnly.FromDateTime(DateTime.Today) };
+    }
+
+    private static string Money(decimal amount) => $"R{amount:0.00}";
+}
