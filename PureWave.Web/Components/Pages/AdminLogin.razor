@@ -1,0 +1,36 @@
+@page "/admin/login"
+@inject NavigationManager NavigationManager
+
+<PageTitle>PureWave | Admin Login</PageTitle>
+
+<section class="page-intro">
+    <span class="section-tag">Admin Login</span>
+    <h1>Sign in to view saved intakes</h1>
+    <p>Use the admin credentials configured for the site to access the intake archive.</p>
+</section>
+
+<section class="admin-login-card">
+    @if (HasError)
+    {
+        <div class="submission-error" role="alert">Login failed. Please check your username and password.</div>
+    }
+
+    <form method="post" action="/admin/login" class="admin-login-form">
+        <label>
+            Username
+            <input class="form-input" type="text" name="username" autocomplete="username" />
+        </label>
+
+        <label>
+            Password
+            <input class="form-input" type="password" name="password" autocomplete="current-password" />
+        </label>
+
+        <button type="submit" class="button-primary">Sign in</button>
+    </form>
+</section>
+
+@code {
+    private bool HasError =>
+        NavigationManager.ToAbsoluteUri(NavigationManager.Uri).Query.Contains("error=1", StringComparison.OrdinalIgnoreCase);
+}

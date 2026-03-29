@@ -1,5 +1,7 @@
 @page "/intake"
 @rendermode InteractiveServer
+@inject IIntakeSubmissionStore IntakeSubmissionStore
+@inject ILogger<Pages.Intake> Logger
 
 <PageTitle>PureWave | Intake Questionnaire</PageTitle>
 
@@ -18,9 +20,13 @@
         <span class="section-tag">Brief received</span>
         <h2>Thanks, @Model.FullName.</h2>
         <p>
-            Your intake summary is ready for review. In a production version this is where we would post the brief to a CRM,
-            email inbox, or project pipeline.
+            Your intake has been saved to the website for review. The summary below reflects what was stored.
         </p>
+
+        @if (!string.IsNullOrWhiteSpace(SavedFileName))
+        {
+            <p><strong>Saved file:</strong> @SavedFileName</p>
+        }
 
         <div class="submission-summary">
             <div>
@@ -56,7 +62,6 @@ else
     <EditForm Model="Model" FormName="purewave-intake" OnValidSubmit="HandleValidSubmit" class="intake-form">
         <DataAnnotationsValidator />
         <ValidationSummary class="validation-summary" />
-
         <div class="form-grid">
             <section class="form-card">
                 <h2>Contact</h2>
@@ -128,7 +133,9 @@ else
                     Budget band
                     <InputSelect @bind-Value="Model.BudgetBand" class="form-input">
                         <option value="">Select budget band</option>
-                        <option>Under R100k</option>
+                        <option>Under R20k</option>
+                        <option>R20k - R50k</option>
+                        <option>R50k - R100k</option>
                         <option>R100k - R250k</option>
                         <option>R250k - R500k</option>
                         <option>R500k+</option>
@@ -201,6 +208,16 @@ else
                     <InputCheckbox @bind-Value="Model.NeedsProcurementAdvice" />
                     <span>Independent procurement advice</span>
                 </label>
+
+                <label class="check-row">
+                    <InputCheckbox @bind-Value="Model.NeedsExistingEquipmentInstallation" />
+                    <span>Installation of existing equipment</span>
+                </label>
+
+                <label class="check-row">
+                    <InputCheckbox @bind-Value="Model.NeedsGuidanceOnly" />
+                    <span>Guidance and advice only</span>
+                </label>
             </section>
 
             <section class="form-card">
@@ -224,8 +241,15 @@ else
             </section>
         </div>
 
+        @if (!string.IsNullOrWhiteSpace(ErrorMessage))
+        {
+            <div class="submission-error" role="alert">@ErrorMessage</div>
+        }
+
         <div class="form-actions">
-            <button type="submit" class="button-primary">Submit questionnaire</button>
+            <button type="submit" class="button-primary" disabled="@IsSubmitting">
+                @(IsSubmitting ? "Saving..." : "Submit questionnaire")
+            </button>
             <a class="button-secondary" href="/plans">Review plans again</a>
         </div>
     </EditForm>
@@ -234,15 +258,36 @@ else
 @code {
     private IntakeQuestionnaire Model { get; set; } = new();
     private bool IsSubmitted { get; set; }
+    private bool IsSubmitting { get; set; }
+    private string? ErrorMessage { get; set; }
+    private string? SavedFileName { get; set; }
 
-    private void HandleValidSubmit()
+    private async Task HandleValidSubmit()
     {
-        IsSubmitted = true;
+        try
+        {
+            IsSubmitting = true;
+            ErrorMessage = null;
+            SavedFileName = await IntakeSubmissionStore.SaveAsync(Model);
+            IsSubmitted = true;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to save PureWave intake for {EmailAddress}", Model.EmailAddress);
+            ErrorMessage = "We couldn't save your intake just yet. Please try again.";
+        }
+        finally
+        {
+            IsSubmitting = false;
+        }
     }
 
     private void StartNewSubmission()
     {
         Model = new IntakeQuestionnaire();
         IsSubmitted = false;
+        ErrorMessage = null;
+        IsSubmitting = false;
+        SavedFileName = null;
     }
 }

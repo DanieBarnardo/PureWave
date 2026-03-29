@@ -1,0 +1,25 @@
+﻿{
+  "SubmittedAt": "2026-03-29T10:48:28.2825962+02:00",
+  "Questionnaire": {
+    "FullName": "VIVIAN",
+    "EmailAddress": "daniebarnardo@hotmail.com",
+    "PhoneNumber": "0814280298",
+    "SuburbOrArea": "Westville, Durban",
+    "ProjectStage": "Renovating an existing room",
+    "InterestedPlan": "The Blueprint",
+    "RoomType": "Dedicated cinema room",
+    "PrimaryGoals": "i need a meadia player",
+    "RoomDimensions": "nha",
+    "BudgetBand": "Under R20k",
+    "Timeline": "Within 1 to 3 months",
+    "NeedsAcousticDesign": false,
+    "NeedsCalibration": false,
+    "NeedsAutomation": false,
+    "NeedsProcurementAdvice": false,
+    "NeedsExistingEquipmentInstallation": false,
+    "NeedsGuidanceOnly": true,
+    "ExistingEquipment": "",
+    "KeyChallenges": "its shit",
+    "ContactPreference": "Email first"
+  }
+}

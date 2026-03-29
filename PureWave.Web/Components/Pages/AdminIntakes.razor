@@ -1,0 +1,90 @@
+@attribute [Authorize]
+@page "/admin/intakes"
+@inject IIntakeSubmissionStore IntakeSubmissionStore
+
+<PageTitle>PureWave | Admin Intakes</PageTitle>
+
+<section class="page-intro">
+    <span class="section-tag">Admin</span>
+    <h1>Saved intake submissions</h1>
+    <p>
+        This page reads the intake folder used by the website and lets you download the raw JSON submissions directly from the app.
+    </p>
+</section>
+
+@if (!string.IsNullOrWhiteSpace(ErrorMessage))
+{
+    <div class="submission-error" role="alert">@ErrorMessage</div>
+}
+else if (Submissions is null)
+{
+    <section class="admin-card">
+        <p>Loading saved intakes...</p>
+    </section>
+}
+else if (Submissions.Count == 0)
+{
+    <section class="admin-card">
+        <p>No saved intake submissions were found yet.</p>
+    </section>
+}
+else
+{
+    <section class="admin-card">
+        <div class="admin-summary">
+            <strong>@Submissions.Count</strong>
+            <span>saved intake submissions</span>
+        </div>
+
+        <form method="post" action="/admin/logout" class="admin-actions">
+            <button type="submit" class="button-secondary">Sign out</button>
+        </form>
+
+        <div class="intake-table">
+            <div class="intake-table-header">
+                <span>File</span>
+                <span>Saved</span>
+                <span>Size</span>
+                <span>Action</span>
+            </div>
+
+            @foreach (var submission in Submissions)
+            {
+                <div class="intake-row">
+                    <span class="intake-file">@submission.FileName</span>
+                    <span>@submission.LastModified.ToString("dd MMM yyyy HH:mm")</span>
+                    <span>@FormatSize(submission.SizeBytes)</span>
+                    <a class="button-secondary intake-download" href="/admin/intakes/download/@Uri.EscapeDataString(submission.FileName)">Download</a>
+                </div>
+            }
+        </div>
+    </section>
+}
+
+@code {
+    private IReadOnlyList<IntakeSubmissionFile>? Submissions { get; set; }
+    private string? ErrorMessage { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            Submissions = await IntakeSubmissionStore.ListAsync();
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"We couldn't load the saved intakes. {ex.Message}";
+        }
+    }
+
+    private static string FormatSize(long bytes)
+    {
+        const double kb = 1024;
+        if (bytes < kb)
+        {
+            return $"{bytes} B";
+        }
+
+        return $"{bytes / kb:0.0} KB";
+    }
+}

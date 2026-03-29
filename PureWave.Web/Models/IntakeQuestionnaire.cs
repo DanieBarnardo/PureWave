@@ -46,6 +46,8 @@ public sealed class IntakeQuestionnaire
     public bool NeedsCalibration { get; set; }
     public bool NeedsAutomation { get; set; }
     public bool NeedsProcurementAdvice { get; set; }
+    public bool NeedsExistingEquipmentInstallation { get; set; }
+    public bool NeedsGuidanceOnly { get; set; }
 
     [StringLength(800)]
     public string ExistingEquipment { get; set; } = string.Empty;

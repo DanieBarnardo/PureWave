@@ -357,6 +357,92 @@ button.button-primary:hover {
     background: #000;
 }
 
+.admin-card {
+    padding: 1.6rem;
+    border-radius: 30px;
+    border: 1px solid var(--pw-border);
+    background: var(--pw-panel);
+    box-shadow: var(--pw-shadow);
+    backdrop-filter: blur(18px);
+}
+
+.admin-summary {
+    margin-bottom: 1rem;
+}
+
+.admin-summary strong,
+.admin-summary span {
+    display: block;
+}
+
+.admin-summary strong {
+    font-size: 2rem;
+}
+
+.admin-summary span {
+    color: var(--pw-muted);
+}
+
+.admin-actions {
+    margin-bottom: 1rem;
+}
+
+.admin-login-card {
+    max-width: 32rem;
+    padding: 1.6rem;
+    border-radius: 30px;
+    border: 1px solid var(--pw-border);
+    background: var(--pw-panel);
+    box-shadow: var(--pw-shadow);
+    backdrop-filter: blur(18px);
+}
+
+.admin-login-form {
+    display: grid;
+    gap: 1rem;
+}
+
+.admin-login-form label {
+    display: grid;
+    gap: 0.5rem;
+}
+
+.intake-table {
+    display: grid;
+    gap: 0.8rem;
+}
+
+.intake-table-header,
+.intake-row {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) 1fr 0.7fr auto;
+    gap: 1rem;
+    align-items: center;
+}
+
+.intake-table-header {
+    padding: 0 0.2rem;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: rgba(238, 242, 249, 0.55);
+}
+
+.intake-row {
+    padding: 1rem 1.1rem;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.intake-file {
+    overflow-wrap: anywhere;
+}
+
+.intake-download {
+    white-space: nowrap;
+}
+
 .process-grid,
 .comparison-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -487,6 +573,15 @@ button.button-primary:hover {
     margin-top: 1rem;
 }
 
+.submission-error {
+    margin-bottom: 1rem;
+    padding: 1rem 1.1rem;
+    border-radius: 18px;
+    border: 1px solid rgba(255, 129, 129, 0.35);
+    background: rgba(113, 22, 31, 0.35);
+    color: #ffd2d2;
+}
+
 .submission-card {
     padding: 1.8rem;
     border-radius: 32px;
@@ -516,6 +611,8 @@ button.button-primary:hover {
     .comparison-grid,
     .tier-grid,
     .phase-heading,
+    .intake-table-header,
+    .intake-row,
     .plan-columns,
     .form-grid,
     .plan-meta,
