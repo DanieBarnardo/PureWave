@@ -4,67 +4,133 @@
 
 <section class="page-intro">
     <span class="section-tag">Plans</span>
-    <h1>Three engagement levels, each built around technical clarity.</h1>
+    <h1>Choose the kind of help that gets you closer to the cinema and music experience you want at home.</h1>
     <p>
-        PureWave works as an independent consultancy, so each plan is centered on decision quality, room performance,
-        and user experience rather than equipment markup.
+        PureWave is here to help you enjoy your movies, concerts, and favourite albums more, whether that means planning a new room,
+        fixing an underperforming system, or choosing equipment that truly suits your space.
     </p>
 </section>
 
-<section class="plans-grid">
-    @foreach (var plan in PureWavePlans.All)
-    {
-        <article class="plan-detail-card" id="@plan.Slug">
-            <div class="plan-header">
-                <span class="plan-accent">@plan.AccentLabel</span>
-                <h2>@plan.Name</h2>
-                <p>@plan.Tagline</p>
-            </div>
+<section class="section-block">
+    <div class="section-heading">
+        <span class="section-tag">On-Site</span>
+        <h2>Durban-first support for clients who want a room that sounds exciting, immersive, and easy to live with.</h2>
+    </div>
 
-            <div class="plan-meta">
-                <div>
-                    <span>Best for</span>
-                    <strong>@plan.BestFor</strong>
-                </div>
-                <div>
-                    <span>Pricing model</span>
-                    <strong>@plan.PricingModel</strong>
-                </div>
-                <div>
-                    <span>Format</span>
-                    <strong>@plan.Turnaround</strong>
-                </div>
-            </div>
-
-            <div class="plan-columns">
-                <div>
-                    <h3>Included</h3>
-                    <ul class="feature-list">
-                        @foreach (var item in plan.Deliverables)
-                        {
-                            <li>@item</li>
-                        }
-                    </ul>
+    <section class="plans-grid">
+        @foreach (var plan in PureWavePlans.All.Where(static x => x.ServiceTrack == "On-Site"))
+        {
+            <article class="plan-detail-card" id="@plan.Slug">
+                <div class="plan-header">
+                    <span class="section-tag">@plan.ServiceTrack</span>
+                    <span class="plan-accent">@plan.AccentLabel</span>
+                    <h2>@plan.Name</h2>
+                    <p>@plan.Tagline</p>
                 </div>
 
-                <div>
-                    <h3>What this solves</h3>
-                    <ul class="feature-list feature-list-soft">
-                        @foreach (var item in plan.Outcomes)
-                        {
-                            <li>@item</li>
-                        }
-                    </ul>
+                <div class="plan-meta">
+                    <div>
+                        <span>Best for</span>
+                        <strong>@plan.BestFor</strong>
+                    </div>
+                    <div>
+                        <span>Pricing model</span>
+                        <strong>@plan.PricingModel</strong>
+                    </div>
+                    <div>
+                        <span>Format</span>
+                        <strong>@plan.Turnaround</strong>
+                    </div>
                 </div>
-            </div>
-        </article>
-    }
+
+                <div class="plan-columns">
+                    <div>
+                        <h3>Included</h3>
+                        <ul class="feature-list">
+                            @foreach (var item in plan.Deliverables)
+                            {
+                                <li>@item</li>
+                            }
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h3>What this solves</h3>
+                        <ul class="feature-list feature-list-soft">
+                            @foreach (var item in plan.Outcomes)
+                            {
+                                <li>@item</li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+            </article>
+        }
+    </section>
+</section>
+
+<section class="section-block">
+    <div class="section-heading">
+        <span class="section-tag">Remote</span>
+        <h2>Additional support for clients who want expert planning and buying advice from anywhere.</h2>
+    </div>
+
+    <section class="plans-grid">
+        @foreach (var plan in PureWavePlans.All.Where(static x => x.ServiceTrack == "Remote"))
+        {
+            <article class="plan-detail-card" id="@plan.Slug">
+                <div class="plan-header">
+                    <span class="section-tag">@plan.ServiceTrack</span>
+                    <span class="plan-accent">@plan.AccentLabel</span>
+                    <h2>@plan.Name</h2>
+                    <p>@plan.Tagline</p>
+                </div>
+
+                <div class="plan-meta">
+                    <div>
+                        <span>Best for</span>
+                        <strong>@plan.BestFor</strong>
+                    </div>
+                    <div>
+                        <span>Pricing model</span>
+                        <strong>@plan.PricingModel</strong>
+                    </div>
+                    <div>
+                        <span>Format</span>
+                        <strong>@plan.Turnaround</strong>
+                    </div>
+                </div>
+
+                <div class="plan-columns">
+                    <div>
+                        <h3>Included</h3>
+                        <ul class="feature-list">
+                            @foreach (var item in plan.Deliverables)
+                            {
+                                <li>@item</li>
+                            }
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h3>What this solves</h3>
+                        <ul class="feature-list feature-list-soft">
+                            @foreach (var item in plan.Outcomes)
+                            {
+                                <li>@item</li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+            </article>
+        }
+    </section>
 </section>
 
 <section class="comparison-band">
     <div>
         <span class="section-tag">How to choose</span>
-        <h2>Start with the room, not the gear list.</h2>
+        <h2>Start with what you want to feel when the movie starts or the music kicks in.</h2>
     </div>
 
     <div class="comparison-grid">
@@ -79,6 +145,14 @@
         <article>
             <h3>The Director</h3>
             <p>Best when the build is substantial enough that design oversight protects the outcome.</p>
+        </article>
+        <article>
+            <h3>The Virtual Blueprint</h3>
+            <p>Best when you need room and wiring logic remotely before the project hardens.</p>
+        </article>
+        <article>
+            <h3>The Procurement Report</h3>
+            <p>Best when you need independent research, South African pricing context, and buying clarity.</p>
         </article>
     </div>
 

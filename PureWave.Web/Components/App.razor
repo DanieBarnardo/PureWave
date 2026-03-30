@@ -16,6 +16,67 @@
 <body>
     <Routes />
     <ReconnectModal />
+    <script>
+        window.PureWave = window.PureWave || {};
+
+        window.PureWave.scrollToTop = function () {
+            requestAnimationFrame(function () {
+                requestAnimationFrame(function () {
+                    window.scrollTo(0, 0);
+                    document.documentElement.scrollTop = 0;
+                    document.body.scrollTop = 0;
+
+                    const main = document.querySelector('main');
+                    if (main) {
+                        main.scrollTop = 0;
+                    }
+
+                    const contentShell = document.querySelector('.content-shell');
+                    if (contentShell) {
+                        contentShell.scrollTop = 0;
+                    }
+                });
+            });
+        };
+
+        window.addEventListener('enhancedload', function () {
+            window.PureWave.scrollToTop();
+        });
+
+        window.addEventListener('popstate', function () {
+            setTimeout(function () {
+                window.PureWave.scrollToTop();
+            }, 0);
+        });
+
+        document.addEventListener('click', function (event) {
+            const link = event.target.closest('a[href]');
+            if (!link) {
+                return;
+            }
+
+            const href = link.getAttribute('href');
+            if (!href || href.startsWith('#') || link.target === '_blank' || link.hasAttribute('download')) {
+                return;
+            }
+
+            const targetUrl = new URL(link.href, window.location.href);
+            const currentUrl = new URL(window.location.href);
+
+            if (targetUrl.origin !== currentUrl.origin) {
+                return;
+            }
+
+            const currentPath = currentUrl.pathname + currentUrl.search + currentUrl.hash;
+            const targetPath = targetUrl.pathname + targetUrl.search + targetUrl.hash;
+
+            if (currentPath !== targetPath) {
+                setTimeout(function () {
+                    window.PureWave.scrollToTop();
+                }, 0);
+            }
+        });
+    </script>
     <script src="@Assets["_framework/blazor.web.js"]"></script>
 </body>
 

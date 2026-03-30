@@ -8,6 +8,8 @@ create table if not exists intake_submissions
     suburb_or_area varchar(120) not null,
     project_stage varchar(120) not null,
     interested_plan varchar(120) not null,
+    service_mode varchar(120) not null default '',
+    service_format varchar(120) not null default '',
     room_type varchar(120) not null,
     primary_goals text not null,
     room_dimensions varchar(400) not null,
@@ -29,3 +31,9 @@ create index if not exists ix_intake_submissions_submitted_at
 
 create index if not exists ix_intake_submissions_email_address
     on intake_submissions (email_address);
+
+alter table if exists intake_submissions
+    add column if not exists service_mode varchar(120) not null default '';
+
+alter table if exists intake_submissions
+    add column if not exists service_format varchar(120) not null default '';

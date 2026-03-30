@@ -7,10 +7,10 @@
 
 <section class="page-intro">
     <span class="section-tag">Intake Questionnaire</span>
-    <h1>Tell PureWave about the room, the brief, and the performance you want.</h1>
+    <h1>Tell PureWave about your room, your gear, and what you want to enjoy more from movies and music.</h1>
     <p>
-        This intake is designed to surface the technical constraints early, so the first consultation starts with useful context
-        instead of generic discovery.
+        This intake helps PureWave understand what is exciting you, frustrating you, or still missing from your current setup,
+        so the first conversation starts with real context instead of generic questions.
     </p>
 </section>
 
@@ -20,7 +20,7 @@
         <span class="section-tag">Brief received</span>
         <h2>Thanks, @Model.FullName.</h2>
         <p>
-            Your intake has been saved to the website for review. The summary below reflects what was stored.
+            Your brief has been saved for review. The summary below shows the details that were captured.
         </p>
 
         @if (!string.IsNullOrWhiteSpace(SavedFileName))
@@ -32,6 +32,14 @@
             <div>
                 <span>Plan fit</span>
                 <strong>@Model.InterestedPlan</strong>
+            </div>
+            <div>
+                <span>Service mode</span>
+                <strong>@Model.ServiceMode</strong>
+            </div>
+            <div>
+                <span>Service format</span>
+                <strong>@Model.ServiceFormat</strong>
             </div>
             <div>
                 <span>Project stage</span>
@@ -95,13 +103,37 @@ else
                 <h2>Project scope</h2>
 
                 <label>
+                    Service mode
+                    <InputSelect Value="Model.ServiceMode" ValueChanged="@(EventCallback.Factory.Create<string>(this, OnServiceModeChanged))" ValueExpression="@(() => Model.ServiceMode)" class="form-input">
+                        <option value="">Select service mode</option>
+                        @foreach (var option in ServiceModeOptions)
+                        {
+                            <option value="@option">@option</option>
+                        }
+                    </InputSelect>
+                    <ValidationMessage For="@(() => Model.ServiceMode)" />
+                </label>
+
+                <label>
+                    Type of support needed
+                    <InputSelect @bind-Value="Model.ServiceFormat" class="form-input">
+                        <option value="">Select support format</option>
+                        @foreach (var option in ServiceFormatOptions)
+                        {
+                            <option value="@option">@option</option>
+                        }
+                    </InputSelect>
+                    <ValidationMessage For="@(() => Model.ServiceFormat)" />
+                </label>
+
+                <label>
                     Project stage
                     <InputSelect @bind-Value="Model.ProjectStage" class="form-input">
                         <option value="">Select project stage</option>
-                        <option>Planning a new room</option>
-                        <option>Renovating an existing room</option>
-                        <option>Upgrading an existing system</option>
-                        <option>Need tuning and calibration only</option>
+                        @foreach (var option in ProjectStageOptions)
+                        {
+                            <option value="@option">@option</option>
+                        }
                     </InputSelect>
                     <ValidationMessage For="@(() => Model.ProjectStage)" />
                 </label>
@@ -110,9 +142,10 @@ else
                     Which plan feels closest?
                     <InputSelect @bind-Value="Model.InterestedPlan" class="form-input">
                         <option value="">Select a plan</option>
-                        <option>The Blueprint</option>
-                        <option>The Tuning</option>
-                        <option>The Director</option>
+                        @foreach (var option in InterestedPlanOptions)
+                        {
+                            <option value="@option">@option</option>
+                        }
                     </InputSelect>
                     <ValidationMessage For="@(() => Model.InterestedPlan)" />
                 </label>
@@ -189,35 +222,53 @@ else
             <section class="form-card">
                 <h2>Services of interest</h2>
 
-                <label class="check-row">
-                    <InputCheckbox @bind-Value="Model.NeedsAcousticDesign" />
-                    <span>Acoustic design and treatment strategy</span>
-                </label>
+                @if (ShowAcousticDesign)
+                {
+                    <label class="check-row">
+                        <InputCheckbox @bind-Value="Model.NeedsAcousticDesign" />
+                        <span>@AcousticDesignLabel</span>
+                    </label>
+                }
 
-                <label class="check-row">
-                    <InputCheckbox @bind-Value="Model.NeedsCalibration" />
-                    <span>Calibration and DSP tuning</span>
-                </label>
+                @if (ShowCalibration)
+                {
+                    <label class="check-row">
+                        <InputCheckbox @bind-Value="Model.NeedsCalibration" />
+                        <span>Calibration and DSP tuning</span>
+                    </label>
+                }
 
-                <label class="check-row">
-                    <InputCheckbox @bind-Value="Model.NeedsAutomation" />
-                    <span>Automation and control design</span>
-                </label>
+                @if (ShowAutomation)
+                {
+                    <label class="check-row">
+                        <InputCheckbox @bind-Value="Model.NeedsAutomation" />
+                        <span>Automation and control design</span>
+                    </label>
+                }
 
-                <label class="check-row">
-                    <InputCheckbox @bind-Value="Model.NeedsProcurementAdvice" />
-                    <span>Independent procurement advice</span>
-                </label>
+                @if (ShowProcurementAdvice)
+                {
+                    <label class="check-row">
+                        <InputCheckbox @bind-Value="Model.NeedsProcurementAdvice" />
+                        <span>Independent procurement advice</span>
+                    </label>
+                }
 
-                <label class="check-row">
-                    <InputCheckbox @bind-Value="Model.NeedsExistingEquipmentInstallation" />
-                    <span>Installation of existing equipment</span>
-                </label>
+                @if (ShowExistingEquipmentInstallation)
+                {
+                    <label class="check-row">
+                        <InputCheckbox @bind-Value="Model.NeedsExistingEquipmentInstallation" />
+                        <span>Installation of existing equipment</span>
+                    </label>
+                }
 
-                <label class="check-row">
-                    <InputCheckbox @bind-Value="Model.NeedsGuidanceOnly" />
-                    <span>Guidance and advice only</span>
-                </label>
+                @if (ShowGuidanceOnly)
+                {
+                    <label class="check-row">
+                        <InputCheckbox @bind-Value="Model.NeedsGuidanceOnly" />
+                        <span>Guidance and advice only</span>
+                    </label>
+                }
             </section>
 
             <section class="form-card">
@@ -236,7 +287,7 @@ else
 
                 <div class="form-tip">
                     <strong>What happens next</strong>
-                    <p>Once submitted, this brief can be reviewed before scheduling the consultation that best fits the project.</p>
+                    <p>Once submitted, PureWave can review the brief and guide you toward the right next step. For remote work, the process starts with WhatsApp and the consultation slot is arranged at your convenience.</p>
                 </div>
             </section>
         </div>
@@ -262,6 +313,117 @@ else
     private string? ErrorMessage { get; set; }
     private string? SavedFileName { get; set; }
 
+    private static readonly string[] ServiceModeOptions =
+    [
+        "On-site in Durban",
+        "Remote consultancy",
+        "Not sure yet"
+    ];
+
+    private static readonly string[] OnSiteProjectStageOptions =
+    [
+        "Planning a new room",
+        "Renovating an existing room",
+        "Upgrading an existing system",
+        "Need tuning and calibration only"
+    ];
+
+    private static readonly string[] RemoteProjectStageOptions =
+    [
+        "Planning a new room",
+        "Renovating an existing room",
+        "Upgrading an existing system"
+    ];
+
+    private static readonly string[] AllProjectStageOptions =
+    [
+        "Planning a new room",
+        "Renovating an existing room",
+        "Upgrading an existing system",
+        "Need tuning and calibration only"
+    ];
+
+    private static readonly string[] OnSitePlanOptions =
+    [
+        "The Blueprint",
+        "The Tuning",
+        "The Director"
+    ];
+
+    private static readonly string[] RemotePlanOptions =
+    [
+        "The Virtual Blueprint",
+        "The Procurement Report"
+    ];
+
+    private static readonly string[] AllPlanOptions =
+    [
+        "The Blueprint",
+        "The Tuning",
+        "The Director",
+        "The Virtual Blueprint",
+        "The Procurement Report"
+    ];
+
+    private static readonly string[] OnSiteFormatOptions =
+    [
+        "On-site room strategy and planning",
+        "On-site tuning and calibration",
+        "On-site design oversight"
+    ];
+
+    private static readonly string[] RemoteFormatOptions =
+    [
+        "Remote layout and wiring guidance",
+        "Remote procurement research",
+        "Remote planning and procurement"
+    ];
+
+    private static readonly string[] AllFormatOptions =
+    [
+        "On-site room strategy and planning",
+        "On-site tuning and calibration",
+        "On-site design oversight",
+        "Remote layout and wiring guidance",
+        "Remote procurement research",
+        "Remote planning and procurement"
+    ];
+
+    private IReadOnlyList<string> ProjectStageOptions =>
+        Model.ServiceMode switch
+        {
+            "On-site in Durban" => OnSiteProjectStageOptions,
+            "Remote consultancy" => RemoteProjectStageOptions,
+            _ => AllProjectStageOptions
+        };
+
+    private IReadOnlyList<string> InterestedPlanOptions =>
+        Model.ServiceMode switch
+        {
+            "On-site in Durban" => OnSitePlanOptions,
+            "Remote consultancy" => RemotePlanOptions,
+            _ => AllPlanOptions
+        };
+
+    private IReadOnlyList<string> ServiceFormatOptions =>
+        Model.ServiceMode switch
+        {
+            "On-site in Durban" => OnSiteFormatOptions,
+            "Remote consultancy" => RemoteFormatOptions,
+            _ => AllFormatOptions
+        };
+
+    private bool IsRemoteMode => Model.ServiceMode == "Remote consultancy";
+    private bool ShowAcousticDesign => true;
+    private bool ShowCalibration => !IsRemoteMode;
+    private bool ShowAutomation => !IsRemoteMode;
+    private bool ShowProcurementAdvice => true;
+    private bool ShowExistingEquipmentInstallation => !IsRemoteMode;
+    private bool ShowGuidanceOnly => true;
+    private string AcousticDesignLabel => IsRemoteMode
+        ? "Remote acoustic and layout strategy"
+        : "Acoustic design and treatment strategy";
+
     private async Task HandleValidSubmit()
     {
         try
@@ -274,7 +436,7 @@ else
         catch (Exception ex)
         {
             Logger.LogError(ex, "Failed to save PureWave intake for {EmailAddress}", Model.EmailAddress);
-            ErrorMessage = "We couldn't save your intake just yet. Please try again.";
+            ErrorMessage = "We couldn't save your brief just yet. Please try again.";
         }
         finally
         {
@@ -290,4 +452,32 @@ else
         IsSubmitting = false;
         SavedFileName = null;
     }
+
+    private void OnServiceModeChanged(string value)
+    {
+        Model.ServiceMode = value;
+
+        if (!ProjectStageOptions.Contains(Model.ProjectStage))
+        {
+            Model.ProjectStage = string.Empty;
+        }
+
+        if (!InterestedPlanOptions.Contains(Model.InterestedPlan))
+        {
+            Model.InterestedPlan = string.Empty;
+        }
+
+        if (!ServiceFormatOptions.Contains(Model.ServiceFormat))
+        {
+            Model.ServiceFormat = string.Empty;
+        }
+
+        if (Model.ServiceMode == "Remote consultancy")
+        {
+            Model.NeedsCalibration = false;
+            Model.NeedsAutomation = false;
+            Model.NeedsExistingEquipmentInstallation = false;
+        }
+    }
+
 }

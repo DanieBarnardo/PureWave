@@ -25,6 +25,8 @@ public sealed class PostgresIntakeSubmissionStore(IOptions<PostgresSettings> set
                 suburb_or_area,
                 project_stage,
                 interested_plan,
+                service_mode,
+                service_format,
                 room_type,
                 primary_goals,
                 room_dimensions,
@@ -49,6 +51,8 @@ public sealed class PostgresIntakeSubmissionStore(IOptions<PostgresSettings> set
                 @suburb_or_area,
                 @project_stage,
                 @interested_plan,
+                @service_mode,
+                @service_format,
                 @room_type,
                 @primary_goals,
                 @room_dimensions,
@@ -129,6 +133,8 @@ public sealed class PostgresIntakeSubmissionStore(IOptions<PostgresSettings> set
                 suburb_or_area,
                 project_stage,
                 interested_plan,
+                service_mode,
+                service_format,
                 room_type,
                 primary_goals,
                 room_dimensions,
@@ -168,20 +174,22 @@ public sealed class PostgresIntakeSubmissionStore(IOptions<PostgresSettings> set
                 SuburbOrArea = reader.GetString(5),
                 ProjectStage = reader.GetString(6),
                 InterestedPlan = reader.GetString(7),
-                RoomType = reader.GetString(8),
-                PrimaryGoals = reader.GetString(9),
-                RoomDimensions = reader.GetString(10),
-                BudgetBand = reader.GetString(11),
-                Timeline = reader.GetString(12),
-                NeedsAcousticDesign = reader.GetBoolean(13),
-                NeedsCalibration = reader.GetBoolean(14),
-                NeedsAutomation = reader.GetBoolean(15),
-                NeedsProcurementAdvice = reader.GetBoolean(16),
-                NeedsExistingEquipmentInstallation = reader.GetBoolean(17),
-                NeedsGuidanceOnly = reader.GetBoolean(18),
-                ExistingEquipment = reader.GetString(19),
-                KeyChallenges = reader.GetString(20),
-                ContactPreference = reader.GetString(21)
+                ServiceMode = reader.GetString(8),
+                ServiceFormat = reader.GetString(9),
+                RoomType = reader.GetString(10),
+                PrimaryGoals = reader.GetString(11),
+                RoomDimensions = reader.GetString(12),
+                BudgetBand = reader.GetString(13),
+                Timeline = reader.GetString(14),
+                NeedsAcousticDesign = reader.GetBoolean(15),
+                NeedsCalibration = reader.GetBoolean(16),
+                NeedsAutomation = reader.GetBoolean(17),
+                NeedsProcurementAdvice = reader.GetBoolean(18),
+                NeedsExistingEquipmentInstallation = reader.GetBoolean(19),
+                NeedsGuidanceOnly = reader.GetBoolean(20),
+                ExistingEquipment = reader.GetString(21),
+                KeyChallenges = reader.GetString(22),
+                ContactPreference = reader.GetString(23)
             }
         };
 
@@ -199,6 +207,8 @@ public sealed class PostgresIntakeSubmissionStore(IOptions<PostgresSettings> set
         command.Parameters.AddWithValue("suburb_or_area", questionnaire.SuburbOrArea);
         command.Parameters.AddWithValue("project_stage", questionnaire.ProjectStage);
         command.Parameters.AddWithValue("interested_plan", questionnaire.InterestedPlan);
+        command.Parameters.AddWithValue("service_mode", questionnaire.ServiceMode);
+        command.Parameters.AddWithValue("service_format", questionnaire.ServiceFormat);
         command.Parameters.AddWithValue("room_type", questionnaire.RoomType);
         command.Parameters.AddWithValue("primary_goals", questionnaire.PrimaryGoals);
         command.Parameters.AddWithValue("room_dimensions", questionnaire.RoomDimensions);

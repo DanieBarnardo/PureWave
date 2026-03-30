@@ -4,6 +4,7 @@ public sealed class ServicePlan
 {
     public required string Slug { get; init; }
     public required string Name { get; init; }
+    public required string ServiceTrack { get; init; }
     public required string Tagline { get; init; }
     public required string BestFor { get; init; }
     public required string PricingModel { get; init; }

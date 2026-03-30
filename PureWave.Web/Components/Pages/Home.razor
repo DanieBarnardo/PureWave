@@ -5,10 +5,11 @@
 <div class="hero-grid">
     <section class="hero-copy">
         <span class="section-tag">PureWave Consultancy</span>
-        <h1>Home cinema strategy for clients who want performance, not showroom guesswork.</h1>
+        <h1>Better movie nights, better music, and a home theatre system that feels worth every rand.</h1>
         <p class="hero-lead">
-            PureWave helps Durban homeowners design, tune, and integrate premium theatre rooms with clear technical direction.
-            The focus is on acoustics, calibration, large-format projection, and control systems that feel effortless to use.
+            PureWave helps Durban homeowners build, upgrade, and fine-tune home theatre rooms that sound bigger, clearer, and more involving.
+            Whether you want chesty bass for action films, clearer dialogue, or a system that finally does justice to your favourite music, the goal is simple:
+            make the room more exciting to live with.
         </p>
 
         <div class="hero-actions">
@@ -19,15 +20,19 @@
         <div class="stat-strip">
             <div>
                 <strong>Independent</strong>
-                <span>No retail push, no box-moving bias</span>
+                <span>Advice based on what sounds right, not what a shop wants to move</span>
             </div>
             <div>
                 <strong>Technical</strong>
-                <span>Acoustics, DSP, bass optimization, automation</span>
+                <span>Room planning, tuning, bass setup, projection, and smart control</span>
             </div>
             <div>
                 <strong>Local</strong>
                 <span>Durban, Umhlanga, Hillcrest, Westville and surrounds</span>
+            </div>
+            <div>
+                <strong>Remote</strong>
+                <span>Planning and procurement support for clients outside Durban</span>
             </div>
         </div>
     </section>
@@ -40,10 +45,10 @@
         <div class="hero-panel-card">
             <span class="panel-kicker">What PureWave solves</span>
             <ul>
-                <li>Underperforming systems that should sound better than they do</li>
-                <li>New builds that need the room and wiring planned correctly up front</li>
-                <li>Smart theatre environments that need one elegant control experience</li>
-                <li>Premium projects where design intent must survive contractor realities</li>
+                <li>Systems that look expensive but still do not feel thrilling when the movie starts</li>
+                <li>New rooms that need the screen, speakers, seating, and wiring planned properly from day one</li>
+                <li>Upgrade paths for people who love home theatre and do not want to waste money on the wrong next step</li>
+                <li>Media rooms that should feel simple and enjoyable instead of fiddly and frustrating</li>
             </ul>
         </div>
     </section>
@@ -52,13 +57,14 @@
 <section class="section-block">
     <div class="section-heading">
         <span class="section-tag">Plans</span>
-        <h2>Choose the level of guidance that fits the room.</h2>
+        <h2>Choose the kind of help that matches your room, your gear, and how seriously you take movie night.</h2>
     </div>
 
     <div class="plan-preview-grid">
         @foreach (var plan in PureWavePlans.All)
         {
             <article class="plan-preview-card">
+                <span class="section-tag">@plan.ServiceTrack</span>
                 <span class="plan-accent">@plan.AccentLabel</span>
                 <h3>@plan.Name</h3>
                 <p>@plan.Tagline</p>
@@ -79,25 +85,45 @@
 
 <section class="section-block section-band">
     <div class="section-heading">
+        <span class="section-tag">Remote Consultancy</span>
+        <h2>Not in Durban? You can still get solid planning and buying advice remotely.</h2>
+        <p>
+            Remote support is an extra service track for clients who need help with layout planning, wiring priorities,
+            and equipment choices before they start building or buying.
+        </p>
+    </div>
+
+    <div class="comparison-band comparison-band-inline">
+        <p>
+            It starts with a WhatsApp conversation, then a remote slot is arranged at your convenience. You still come away with practical next steps
+            for better movies, better sound, and a smarter upgrade path.
+        </p>
+
+        <a class="button-primary" href="/remote">Explore remote services</a>
+    </div>
+</section>
+
+<section class="section-block section-band">
+    <div class="section-heading">
         <span class="section-tag">Process</span>
-        <h2>A calm, engineering-led workflow.</h2>
+        <h2>A simple process focused on getting you to a room that sounds and feels right.</h2>
     </div>
 
     <div class="process-grid">
         <article>
             <span>01</span>
             <h3>Intake</h3>
-            <p>The questionnaire captures room details, goals, constraints, and the likely service fit.</p>
+            <p>You share the room, the gear, the problems, and what you want to enjoy more from movies and music.</p>
         </article>
         <article>
             <span>02</span>
             <h3>Consult</h3>
-            <p>PureWave translates those inputs into room logic, performance priorities, and a clear scope.</p>
+            <p>PureWave helps make sense of the room and priorities, so the next decision is clearer and more confident.</p>
         </article>
         <article>
             <span>03</span>
             <h3>Deliver</h3>
-            <p>Clients receive practical recommendations, measurable tuning decisions, or full oversight depending on the plan.</p>
+            <p>You get practical recommendations, tuning changes, or a full project roadmap depending on the plan you choose.</p>
         </article>
     </div>
 </section>
@@ -105,16 +131,16 @@
 <section class="section-block">
     <div class="section-heading">
         <span class="section-tag">Sample Roadmap</span>
-        <h2>See how PureWave maps an upgrade from 3.0 to 7.4.4 Atmos.</h2>
+        <h2>See how a real system can grow from a solid start into a room that feels properly cinematic.</h2>
         <p>
-            I worked the Revz upgrade-path recommendation into the site as a browsable example of PureWave's phased thinking.
+            This example shows how PureWave thinks about upgrades: not as random product swaps, but as a step-by-step path toward bigger sound,
+            deeper bass, and a more immersive room.
         </p>
     </div>
 
     <div class="comparison-band">
         <p>
-            The roadmap shows how the room should grow: front stage first, then bass, then surrounds, then Atmos.
-            It is a better reflection of PureWave's consultancy style than a generic product grid.
+            The roadmap starts with the front stage, then bass, then surrounds, then Atmos, so every upgrade actually makes the next one more worthwhile.
         </p>
 
         <a class="button-primary" href="/roadmap">View the upgrade roadmap</a>

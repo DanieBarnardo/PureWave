@@ -25,6 +25,12 @@ public sealed class IntakeQuestionnaire
     [Required(ErrorMessage = "Please choose the plan that fits best so far.")]
     public string InterestedPlan { get; set; } = string.Empty;
 
+    [Required(ErrorMessage = "Please tell us whether you want on-site or remote help.")]
+    public string ServiceMode { get; set; } = string.Empty;
+
+    [Required(ErrorMessage = "Please choose the kind of support you need.")]
+    public string ServiceFormat { get; set; } = string.Empty;
+
     [Required(ErrorMessage = "Please describe the type of space.")]
     public string RoomType { get; set; } = string.Empty;
 
