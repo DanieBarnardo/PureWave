@@ -1,1 +1,165 @@
-Business Plan: PureWave Remote Cinema Consultancy1. Executive SummaryPureWave is an independent, remote-first home cinema consultancy. We bridge the gap between retail AV sales and DIY guesswork by providing technical "Blueprints" and "Procurement Reports." Our mission is to ensure every Rand spent on home entertainment is optimized for performance, acoustics, and future scalability.2. The Problem & SolutionThe Problem: Homeowners often purchase expensive gear that is mismatched for their room, poorly placed, or impossible to expand. Retailers are incentivized to sell stock, not optimal system architecture.The Solution: A technical "Research & Report" service. We provide the expertise of a cinema architect via a structured remote workflow, delivering a vendor-neutral procurement roadmap.3. Service Offerings (Remote-Only)A. The Virtual Blueprint (Discovery & Layout)Focus: Room geometry, speaker placement (5.1 to 9.4.6 Atmos), and seating logic.Deliverable: A 2D/3D layout schematic and a "Wiring Priority" guide.B. The Procurement Report (Research & Spec)Focus: Deep-dive research into currently available stock in South Africa (ZAR pricing).Deliverable: A tiered shopping list (Budget vs. Hobby vs. Enthusiast) with technical justifications for each recommendation.4. Operational Workflow: "The Slot"We utilize a Synchronous Discovery / Asynchronous Delivery model.PhaseActionChannel1. BookingClient purchases a 60-min "Consultancy Slot" via the web portal.Yoco / PayFast2. IntakeClient uploads room photos, dimensions, and current gear list.Web Form / WhatsApp3. The SlotReal-time discussion of goals, budget, and physical constraints.MS Teams / WhatsApp4. Research[Consultant Only] 2–4 hours of market research, stock checking, and modeling.Internal5. DeliveryProfessional Markdown/PDF report sent to the client.Email5. Pricing Strategy (South Africa 2026)Pricing is based on "Productized Consulting" to ensure predictable revenue.The Blueprint Slot (Standard): R2,50060-min call + basic layout report.The Architect Package (Research-Heavy): R5,50060-min call + deep-dive procurement report (3 tiers) + stockist links.The Director's Retainer: R12,000+End-to-end oversight of a new build, including monthly check-ins and contractor liaison.6. Technology StackTo maintain a professional edge, we use high-end design and research tools:Visualization: The Cinema Designer (TCD) or SketchUp for 3D room modeling.Acoustic Modeling: WinISD for custom subwoofer/ELF enclosure recommendations.Communication: MS Teams (for screen sharing layouts) and WhatsApp Business (for rapid asset collection).Reporting: Markdown-to-PDF workflows for clean, technical, and version-controlled reports.7. Market Opportunity (South Africa)The SA audio-visual market is projected to reach $3.7 Billion by 2030. With the return of major trade shows like Mediatech Africa 2026, there is a surging interest in premium home cinema and smart-home integration. PureWave targets the "Affluent DIYer" and "Renovator" segments in Westville, Umhlanga, and Sandton who prefer independent advice over high-pressure sales.8. Growth RoadmapPhase 1 (Q2 2026): Launch the "Research & Report" model to a beta group of 5 clients.Phase 2 (Q3 2026): Develop a "Vendor Network" (referral-only) with trusted SA installers for clients who need physical implementation.Phase 3 (2027): Launch a "DIY ELF Subwoofer" digital plan shop, offering pre-calculated cut-sheets for custom enclosures.Why this works for you:By focusing on Equipment Needs and Recommendations, you leverage your strongest asset: Information. You no longer need to worry about the client's poor internet connection during a live tuning session or their lack of a calibrated microphone. You are the "Master Planner," and they are the "Builder."
+![PureWave Logo](D:\Development\PureWave\Documents\Pure Wave.png)
+
+# Business Plan: PureWave Remote Cinema Consultancy
+
+## 1. Executive Summary
+
+PureWave remains a **Durban-first, on-site home theatre consultancy**, with **remote consultancy offered as an additional service track** for clients who are outside Durban or who need planning and procurement help before an on-site visit makes sense.
+
+The remote offer is designed to help clients make better decisions about:
+- room layout
+- speaker and screen positioning
+- wiring priorities
+- equipment choices
+- upgrade paths for movies and music
+
+The remote model is not positioned as a replacement for on-site tuning, calibration, or installation-led consultancy. Instead, it extends the PureWave brand by making expert planning and independent buying advice available to a wider audience.
+
+## 2. Current Website Positioning
+
+The current PureWave web application has been updated to reflect this dual structure:
+
+- **On-site services remain the flagship offer**
+- **Remote consultancy is presented as an additional service**
+- the site still leads with Durban-based support for premium home theatre rooms
+- remote services are positioned as ideal for planning, guidance, and procurement support
+
+This is now reflected in the public site copy, plans overview, intake form, and remote services page.
+
+## 3. Implemented Remote Service Offerings
+
+The web application currently presents two remote offers:
+
+### A. The Virtual Blueprint
+
+**Focus:** Remote planning help before building or buying
+
+**Use case:** Clients who need help with:
+- room layout
+- seating positions
+- screen sizing
+- speaker placement
+- wiring priorities
+
+**Deliverable:** A written layout and wiring-priority report, based on the client’s intake, discussion, and remote consultation.
+
+### B. The Procurement Report
+
+**Focus:** Independent equipment and upgrade guidance
+
+**Use case:** Clients who want help choosing the right equipment for:
+- movies
+- music
+- future scalability
+- South African pricing and stock context
+
+**Deliverable:** A written research and recommendation report with buying guidance and technical reasoning.
+
+## 4. Implemented Website Changes
+
+The following remote-service changes have already been implemented in the PureWave web application:
+
+### Public Pages
+
+- Added a dedicated **Remote Services** page in the web app
+- Updated the **Plans** page to separate:
+  - **On-Site**
+  - **Remote**
+- Updated the **Home** page to introduce remote services without replacing the Durban-first positioning
+
+### Plans Data
+
+The plans data now includes:
+
+**On-Site**
+- The Blueprint
+- The Tuning
+- The Director
+
+**Remote**
+- The Virtual Blueprint
+- The Procurement Report
+
+### Intake Form
+
+The intake form has been updated so clients can now choose:
+- service mode
+- service format
+- on-site vs remote fit
+
+It also adapts the available choices depending on the selected service mode:
+
+- if a client selects **Remote consultancy**, the form hides options that are only relevant to on-site work
+- remote users see only relevant plan, project-stage, and service-interest options
+
+### Database Support
+
+The intake database schema and persistence layer were updated to support the new fields:
+- `service_mode`
+- `service_format`
+
+These fields are now stored as part of intake submissions.
+
+## 5. Operational Workflow: What Is Now Reflected on the Site
+
+The website no longer suggests that remote clients buy a fixed slot directly through a portal.
+
+Instead, the implemented website now reflects the actual intended remote process:
+
+1. **Client makes contact via WhatsApp**
+2. **PureWave explains the remote process**
+3. **A remote slot is arranged at the client’s convenience**
+4. **The client completes the intake and shares relevant room and equipment details**
+5. **PureWave conducts the remote consultation**
+6. **A written report is delivered afterward**
+
+This is important because it keeps the process personal, flexible, and practical, rather than forcing a rigid self-service booking flow before trust has been established.
+
+## 6. What The Website Currently Says About Remote Booking
+
+The public site now reflects the following booking logic:
+
+- remote work starts with **WhatsApp contact**
+- the consultation slot is **arranged around the client’s convenience**
+- the intake still helps PureWave gather the right context before the discussion
+- the final output is still a **report-led service**
+
+This is a better fit for the PureWave brand than hard-selling a remote slot through an automated checkout page too early.
+
+## 7. Technology and Workflow Assumptions
+
+The website currently supports:
+- remote-service messaging
+- a remote services page
+- service-mode-aware intake handling
+- PostgreSQL storage of updated intake submissions
+
+The website does **not yet fully implement**:
+- direct remote slot booking
+- WhatsApp automation
+- file uploads for room photos and floor plans
+- payment collection for remote sessions
+
+These are still possible future improvements if the remote service grows.
+
+## 8. Recommended Next Steps
+
+If the remote service offering grows, the next logical website improvements would be:
+
+1. Add a dedicated **WhatsApp CTA** on the remote page
+2. Add **file upload support** for room photos, sketches, and existing equipment lists
+3. Add optional **remote-service lead qualification questions**
+4. Add a lightweight **follow-up workflow** for moving a remote enquiry into a confirmed consultation slot
+5. Later, add payment handling only if the manual WhatsApp-led booking flow becomes too time-consuming
+
+## 9. Strategic Fit
+
+The remote-service implementation now fits the business more accurately than the original remote-first concept:
+
+- PureWave keeps its premium local identity
+- remote work broadens reach without weakening the on-site offer
+- the site can now speak to both:
+  - Durban clients wanting hands-on home theatre help
+  - non-local clients wanting expert planning and buying guidance
+
+This keeps the brand grounded in real-world home theatre passion while making the consultancy more scalable over time.
