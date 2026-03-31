@@ -1,7 +1,7 @@
 create table if not exists intake_submissions
 (
-    id bigserial primary key,
-    submitted_at timestamptz not null default now(),
+    id bigint not null auto_increment primary key,
+    submitted_at timestamp not null default current_timestamp,
     full_name varchar(100) not null,
     email_address varchar(256) not null,
     phone_number varchar(64) not null default '',
@@ -15,25 +15,16 @@ create table if not exists intake_submissions
     room_dimensions varchar(400) not null,
     budget_band varchar(120) not null,
     timeline varchar(120) not null,
-    needs_acoustic_design boolean not null default false,
-    needs_calibration boolean not null default false,
-    needs_automation boolean not null default false,
-    needs_procurement_advice boolean not null default false,
-    needs_existing_equipment_installation boolean not null default false,
-    needs_guidance_only boolean not null default false,
-    existing_equipment text not null default '',
-    key_challenges text not null default '',
-    contact_preference varchar(120) not null
+    needs_acoustic_design tinyint(1) not null default 0,
+    needs_calibration tinyint(1) not null default 0,
+    needs_automation tinyint(1) not null default 0,
+    needs_procurement_advice tinyint(1) not null default 0,
+    needs_existing_equipment_installation tinyint(1) not null default 0,
+    needs_guidance_only tinyint(1) not null default 0,
+    existing_equipment text not null,
+    key_challenges text not null,
+    contact_preference varchar(120) not null,
+    client_id bigint null,
+    index ix_intake_submissions_submitted_at (submitted_at),
+    index ix_intake_submissions_email_address (email_address)
 );
-
-create index if not exists ix_intake_submissions_submitted_at
-    on intake_submissions (submitted_at desc);
-
-create index if not exists ix_intake_submissions_email_address
-    on intake_submissions (email_address);
-
-alter table if exists intake_submissions
-    add column if not exists service_mode varchar(120) not null default '';
-
-alter table if exists intake_submissions
-    add column if not exists service_format varchar(120) not null default '';

@@ -10,7 +10,7 @@ using PureWave.Admin.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.Configure<AdminAuthSettings>(builder.Configuration.GetSection(AdminAuthSettings.SectionName));
-builder.Services.Configure<PostgresSettings>(builder.Configuration.GetSection(PostgresSettings.SectionName));
+builder.Services.Configure<MySqlSettings>(builder.Configuration.GetSection(MySqlSettings.SectionName));
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
@@ -24,7 +24,7 @@ builder.Services.AddAuthorization();
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddHttpContextAccessor();
 
-builder.Services.AddScoped(sp => sp.GetRequiredService<IOptions<PostgresSettings>>().Value);
+builder.Services.AddScoped(sp => sp.GetRequiredService<IOptions<MySqlSettings>>().Value);
 builder.Services.AddScoped<AdminRepository>();
 builder.Services.AddSingleton<AdminSchemaInitializer>();
 

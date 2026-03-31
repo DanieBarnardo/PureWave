@@ -36,7 +36,9 @@
                 <div class="button-row">
                     @if (!intake.ClientId.HasValue)
                     {
-                        <button class="primary-button" @onclick="() => CreateClientAsync(intake.Id)">Create client</button>
+                        <button class="primary-button" @onclick="() => CreateClientAsync(intake.Id)" disabled="@(WorkingIntakeId == intake.Id)">
+                            @(WorkingIntakeId == intake.Id ? "Creating..." : "Create client")
+                        </button>
                     }
                     else
                     {
@@ -51,6 +53,7 @@
 @code {
     private List<IntakeRecord> IntakesList { get; set; } = [];
     private string? Message { get; set; }
+    private long? WorkingIntakeId { get; set; }
 
     protected override Task OnInitializedAsync() => LoadAsync();
 
@@ -58,8 +61,22 @@
 
     private async Task CreateClientAsync(long intakeId)
     {
-        var clientId = await Repository.CreateClientFromIntakeAsync(intakeId);
-        Message = $"Client #{clientId} created from intake.";
-        await LoadAsync();
+        WorkingIntakeId = intakeId;
+        Message = null;
+
+        try
+        {
+            var clientId = await Repository.CreateClientFromIntakeAsync(intakeId);
+            Nav.NavigateTo($"/clients/{clientId}");
+        }
+        catch (Exception ex)
+        {
+            Message = $"We couldn't create the client from that intake yet. {ex.Message}";
+            await LoadAsync();
+        }
+        finally
+        {
+            WorkingIntakeId = null;
+        }
     }
 }

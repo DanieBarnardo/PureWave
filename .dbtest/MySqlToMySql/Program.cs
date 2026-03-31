@@ -1,132 +1,62 @@
-using System.Data;
 using System.Globalization;
 using MySqlConnector;
-using Npgsql;
 
-const string PostgresConnectionString = "Server=purewavedb.postgres.database.azure.com;Database=postgres;Port=5432;User Id=danieadmpurewave;Password=Q!w2e3r4t5;Ssl Mode=Require;";
-const string MySqlServer = "purewavedb.mysql.database.azure.com";
-const int MySqlPort = 3306;
-const string MySqlUser = "danieadmpurewave";
-const string MySqlPassword = "Q!w2e3r4t5";
+const string SourceConnectionString = "Server=purewavedb.mysql.database.azure.com;Port=3306;UserID=danieadmpurewave;Password=Q!w2e3r4t5;Database=purewave;SslMode=Required;";
+const string TargetConnectionString = "Server=mysqlssd2.zadns.co.za;Port=3307;UserID=danieadmpurewave;Password=Q!w2e3r4t5;Database=purewavedb;SslMode=Required;";
 
-var targetDatabase = args.FirstOrDefault();
+var tableNames = new[]
+{
+    "clients",
+    "intake_submissions",
+    "projects",
+    "project_items",
+    "invoices",
+    "invoice_items",
+    "invoice_payments"
+};
 
 try
 {
-    var mysqlBuilder = new MySqlConnectionStringBuilder
-    {
-        Server = MySqlServer,
-        Port = (uint)MySqlPort,
-        UserID = MySqlUser,
-        Password = MySqlPassword,
-        SslMode = MySqlSslMode.Required,
-        AllowUserVariables = true
-    };
-
-    await using var mysqlServerConnection = new MySqlConnection(mysqlBuilder.ConnectionString);
-    await mysqlServerConnection.OpenAsync();
-
-    var candidateDatabases = await GetCandidateDatabasesAsync(mysqlServerConnection);
-
-    if (string.IsNullOrWhiteSpace(targetDatabase))
-    {
-        targetDatabase = candidateDatabases.Count switch
-        {
-            0 => "purewave",
-            1 => candidateDatabases[0],
-            _ => candidateDatabases.FirstOrDefault(name => string.Equals(name, "purewave", StringComparison.OrdinalIgnoreCase))
-                 ?? candidateDatabases.First()
-        };
-    }
-
-    await EnsureDatabaseAsync(mysqlServerConnection, targetDatabase);
-
-    mysqlBuilder.Database = targetDatabase;
-
-    await using var source = new NpgsqlConnection(PostgresConnectionString);
-    await using var target = new MySqlConnection(mysqlBuilder.ConnectionString);
+    await using var source = new MySqlConnection(SourceConnectionString);
+    await using var target = new MySqlConnection(TargetConnectionString);
 
     await source.OpenAsync();
     await target.OpenAsync();
 
-    await using var targetTransaction = await target.BeginTransactionAsync();
+    await using var transaction = await target.BeginTransactionAsync();
 
-    await DisableForeignKeyChecksAsync(target, targetTransaction);
-    await EnsureMySqlSchemaAsync(target, targetTransaction);
-    await TruncateTablesAsync(target, targetTransaction);
+    await ExecuteNonQueryAsync(target, transaction, "set foreign_key_checks = 0;");
+    await EnsureSchemaAsync(target, transaction);
+    await TruncateTablesAsync(target, transaction, tableNames);
 
-    await MigrateClientsAsync(source, target, targetTransaction);
-    await MigrateIntakeSubmissionsAsync(source, target, targetTransaction);
-    await MigrateProjectsAsync(source, target, targetTransaction);
-    await MigrateProjectItemsAsync(source, target, targetTransaction);
-    await MigrateInvoicesAsync(source, target, targetTransaction);
-    await MigrateInvoiceItemsAsync(source, target, targetTransaction);
-    await MigrateInvoicePaymentsAsync(source, target, targetTransaction);
+    await CopyClientsAsync(source, target, transaction);
+    await CopyIntakeSubmissionsAsync(source, target, transaction);
+    await CopyProjectsAsync(source, target, transaction);
+    await CopyProjectItemsAsync(source, target, transaction);
+    await CopyInvoicesAsync(source, target, transaction);
+    await CopyInvoiceItemsAsync(source, target, transaction);
+    await CopyInvoicePaymentsAsync(source, target, transaction);
 
-    await ResetAutoIncrementAsync(target, targetTransaction);
-    await EnableForeignKeyChecksAsync(target, targetTransaction);
+    await ResetAutoIncrementAsync(target, transaction, tableNames);
+    await ExecuteNonQueryAsync(target, transaction, "set foreign_key_checks = 1;");
 
-    await targetTransaction.CommitAsync();
+    await transaction.CommitAsync();
 
-    var counts = await GetTableCountsAsync(target);
-
-    Console.WriteLine($"TargetDatabase={targetDatabase}");
-    foreach (var (tableName, count) in counts)
+    Console.WriteLine("Migration completed.");
+    foreach (var (tableName, count) in await GetCountsAsync(target, tableNames))
     {
         Console.WriteLine($"{tableName}={count}");
     }
 }
 catch (Exception ex)
 {
-    Console.WriteLine("Migration failed.");
+    Console.WriteLine("MySQL-to-MySQL migration failed.");
     Console.WriteLine(ex.GetType().FullName);
     Console.WriteLine(ex.Message);
     Environment.ExitCode = 1;
 }
 
-static async Task<List<string>> GetCandidateDatabasesAsync(MySqlConnection connection)
-{
-    var databases = new List<string>();
-
-    await using var command = new MySqlCommand(
-        """
-        select schema_name
-        from information_schema.schemata
-        where schema_name not in ('information_schema', 'mysql', 'performance_schema', 'sys')
-        order by schema_name;
-        """,
-        connection);
-
-    await using var reader = await command.ExecuteReaderAsync();
-    while (await reader.ReadAsync())
-    {
-        databases.Add(reader.GetString(0));
-    }
-
-    return databases;
-}
-
-static async Task EnsureDatabaseAsync(MySqlConnection connection, string databaseName)
-{
-    await using var command = new MySqlCommand(
-        $"create database if not exists `{databaseName}` character set utf8mb4 collate utf8mb4_unicode_ci;",
-        connection);
-    await command.ExecuteNonQueryAsync();
-}
-
-static async Task DisableForeignKeyChecksAsync(MySqlConnection connection, MySqlTransaction transaction)
-{
-    await using var command = new MySqlCommand("set foreign_key_checks = 0;", connection, transaction);
-    await command.ExecuteNonQueryAsync();
-}
-
-static async Task EnableForeignKeyChecksAsync(MySqlConnection connection, MySqlTransaction transaction)
-{
-    await using var command = new MySqlCommand("set foreign_key_checks = 1;", connection, transaction);
-    await command.ExecuteNonQueryAsync();
-}
-
-static async Task EnsureMySqlSchemaAsync(MySqlConnection connection, MySqlTransaction transaction)
+static async Task EnsureSchemaAsync(MySqlConnection connection, MySqlTransaction transaction)
 {
     var statements = new[]
     {
@@ -273,31 +203,27 @@ static async Task EnsureMySqlSchemaAsync(MySqlConnection connection, MySqlTransa
 
     foreach (var statement in statements)
     {
-        await using var command = new MySqlCommand(statement, connection, transaction);
-        await command.ExecuteNonQueryAsync();
+        await ExecuteNonQueryAsync(connection, transaction, statement);
     }
 }
 
-static async Task TruncateTablesAsync(MySqlConnection connection, MySqlTransaction transaction)
+static async Task TruncateTablesAsync(MySqlConnection connection, MySqlTransaction transaction, IEnumerable<string> tableNames)
 {
-    foreach (var tableName in new[] { "invoice_payments", "invoice_items", "invoices", "project_items", "projects", "intake_submissions", "clients" })
+    foreach (var tableName in tableNames.Reverse())
     {
-        await using var command = new MySqlCommand($"truncate table `{tableName}`;", connection, transaction);
-        await command.ExecuteNonQueryAsync();
+        await ExecuteNonQueryAsync(connection, transaction, $"truncate table `{tableName}`;");
     }
 }
 
-static async Task MigrateClientsAsync(NpgsqlConnection source, MySqlConnection target, MySqlTransaction transaction)
+static async Task CopyClientsAsync(MySqlConnection source, MySqlConnection target, MySqlTransaction transaction)
 {
-    const string selectSql =
-        """
+    const string selectSql = """
         select id, full_name, email_address, phone_number, address_line1, address_line2, suburb, city, postal_code, notes, created_at, updated_at
         from clients
         order by id;
         """;
 
-    const string insertSql =
-        """
+    const string insertSql = """
         insert into clients
         (id, full_name, email_address, phone_number, address_line1, address_line2, suburb, city, postal_code, notes, created_at, updated_at)
         values
@@ -316,15 +242,14 @@ static async Task MigrateClientsAsync(NpgsqlConnection source, MySqlConnection t
         command.Parameters.AddWithValue("@city", reader.GetString(7));
         command.Parameters.AddWithValue("@postal_code", reader.GetString(8));
         command.Parameters.AddWithValue("@notes", reader.GetString(9));
-        command.Parameters.AddWithValue("@created_at", ToUtcDateTime(reader.GetFieldValue<DateTimeOffset>(10)));
-        command.Parameters.AddWithValue("@updated_at", ToUtcDateTime(reader.GetFieldValue<DateTimeOffset>(11)));
+        command.Parameters.AddWithValue("@created_at", reader.GetDateTime(10));
+        command.Parameters.AddWithValue("@updated_at", reader.GetDateTime(11));
     });
 }
 
-static async Task MigrateIntakeSubmissionsAsync(NpgsqlConnection source, MySqlConnection target, MySqlTransaction transaction)
+static async Task CopyIntakeSubmissionsAsync(MySqlConnection source, MySqlConnection target, MySqlTransaction transaction)
 {
-    const string selectSql =
-        """
+    const string selectSql = """
         select id, submitted_at, full_name, email_address, phone_number, suburb_or_area, project_stage, interested_plan, service_mode, service_format,
                room_type, primary_goals, room_dimensions, budget_band, timeline, needs_acoustic_design, needs_calibration, needs_automation,
                needs_procurement_advice, needs_existing_equipment_installation, needs_guidance_only, existing_equipment, key_challenges,
@@ -333,8 +258,7 @@ static async Task MigrateIntakeSubmissionsAsync(NpgsqlConnection source, MySqlCo
         order by id;
         """;
 
-    const string insertSql =
-        """
+    const string insertSql = """
         insert into intake_submissions
         (id, submitted_at, full_name, email_address, phone_number, suburb_or_area, project_stage, interested_plan, service_mode, service_format,
          room_type, primary_goals, room_dimensions, budget_band, timeline, needs_acoustic_design, needs_calibration, needs_automation,
@@ -350,7 +274,7 @@ static async Task MigrateIntakeSubmissionsAsync(NpgsqlConnection source, MySqlCo
     await CopyRowsAsync(source, target, transaction, selectSql, insertSql, static (reader, command) =>
     {
         command.Parameters.AddWithValue("@id", reader.GetInt64(0));
-        command.Parameters.AddWithValue("@submitted_at", ToUtcDateTime(reader.GetFieldValue<DateTimeOffset>(1)));
+        command.Parameters.AddWithValue("@submitted_at", reader.GetDateTime(1));
         command.Parameters.AddWithValue("@full_name", reader.GetString(2));
         command.Parameters.AddWithValue("@email_address", reader.GetString(3));
         command.Parameters.AddWithValue("@phone_number", reader.GetString(4));
@@ -377,17 +301,15 @@ static async Task MigrateIntakeSubmissionsAsync(NpgsqlConnection source, MySqlCo
     });
 }
 
-static async Task MigrateProjectsAsync(NpgsqlConnection source, MySqlConnection target, MySqlTransaction transaction)
+static async Task CopyProjectsAsync(MySqlConnection source, MySqlConnection target, MySqlTransaction transaction)
 {
-    const string selectSql =
-        """
+    const string selectSql = """
         select id, client_id, name, description, status, start_date, due_date, created_at, updated_at
         from projects
         order by id;
         """;
 
-    const string insertSql =
-        """
+    const string insertSql = """
         insert into projects
         (id, client_id, name, description, status, start_date, due_date, created_at, updated_at)
         values
@@ -401,24 +323,22 @@ static async Task MigrateProjectsAsync(NpgsqlConnection source, MySqlConnection 
         command.Parameters.AddWithValue("@name", reader.GetString(2));
         command.Parameters.AddWithValue("@description", reader.GetString(3));
         command.Parameters.AddWithValue("@status", reader.GetString(4));
-        command.Parameters.AddWithValue("@start_date", reader.IsDBNull(5) ? DBNull.Value : reader.GetFieldValue<DateOnly>(5).ToDateTime(TimeOnly.MinValue));
-        command.Parameters.AddWithValue("@due_date", reader.IsDBNull(6) ? DBNull.Value : reader.GetFieldValue<DateOnly>(6).ToDateTime(TimeOnly.MinValue));
-        command.Parameters.AddWithValue("@created_at", ToUtcDateTime(reader.GetFieldValue<DateTimeOffset>(7)));
-        command.Parameters.AddWithValue("@updated_at", ToUtcDateTime(reader.GetFieldValue<DateTimeOffset>(8)));
+        command.Parameters.AddWithValue("@start_date", reader.IsDBNull(5) ? DBNull.Value : reader.GetDateTime(5));
+        command.Parameters.AddWithValue("@due_date", reader.IsDBNull(6) ? DBNull.Value : reader.GetDateTime(6));
+        command.Parameters.AddWithValue("@created_at", reader.GetDateTime(7));
+        command.Parameters.AddWithValue("@updated_at", reader.GetDateTime(8));
     });
 }
 
-static async Task MigrateProjectItemsAsync(NpgsqlConnection source, MySqlConnection target, MySqlTransaction transaction)
+static async Task CopyProjectItemsAsync(MySqlConnection source, MySqlConnection target, MySqlTransaction transaction)
 {
-    const string selectSql =
-        """
+    const string selectSql = """
         select id, project_id, item_category, description, quantity, unit_label, cost_amount, billable_amount, incurred_on, notes, created_at
         from project_items
         order by id;
         """;
 
-    const string insertSql =
-        """
+    const string insertSql = """
         insert into project_items
         (id, project_id, item_category, description, quantity, unit_label, cost_amount, billable_amount, incurred_on, notes, created_at)
         values
@@ -435,23 +355,21 @@ static async Task MigrateProjectItemsAsync(NpgsqlConnection source, MySqlConnect
         command.Parameters.AddWithValue("@unit_label", reader.GetString(5));
         command.Parameters.AddWithValue("@cost_amount", reader.GetDecimal(6));
         command.Parameters.AddWithValue("@billable_amount", reader.GetDecimal(7));
-        command.Parameters.AddWithValue("@incurred_on", reader.GetFieldValue<DateOnly>(8).ToDateTime(TimeOnly.MinValue));
+        command.Parameters.AddWithValue("@incurred_on", reader.GetDateTime(8));
         command.Parameters.AddWithValue("@notes", reader.GetString(9));
-        command.Parameters.AddWithValue("@created_at", ToUtcDateTime(reader.GetFieldValue<DateTimeOffset>(10)));
+        command.Parameters.AddWithValue("@created_at", reader.GetDateTime(10));
     });
 }
 
-static async Task MigrateInvoicesAsync(NpgsqlConnection source, MySqlConnection target, MySqlTransaction transaction)
+static async Task CopyInvoicesAsync(MySqlConnection source, MySqlConnection target, MySqlTransaction transaction)
 {
-    const string selectSql =
-        """
+    const string selectSql = """
         select id, project_id, client_id, invoice_number, invoice_date, due_date, status, subtotal, tax_amount, total_due, notes, created_at, updated_at
         from invoices
         order by id;
         """;
 
-    const string insertSql =
-        """
+    const string insertSql = """
         insert into invoices
         (id, project_id, client_id, invoice_number, invoice_date, due_date, status, subtotal, tax_amount, total_due, notes, created_at, updated_at)
         values
@@ -464,29 +382,27 @@ static async Task MigrateInvoicesAsync(NpgsqlConnection source, MySqlConnection 
         command.Parameters.AddWithValue("@project_id", reader.GetInt64(1));
         command.Parameters.AddWithValue("@client_id", reader.GetInt64(2));
         command.Parameters.AddWithValue("@invoice_number", reader.GetString(3));
-        command.Parameters.AddWithValue("@invoice_date", reader.GetFieldValue<DateOnly>(4).ToDateTime(TimeOnly.MinValue));
-        command.Parameters.AddWithValue("@due_date", reader.IsDBNull(5) ? DBNull.Value : reader.GetFieldValue<DateOnly>(5).ToDateTime(TimeOnly.MinValue));
+        command.Parameters.AddWithValue("@invoice_date", reader.GetDateTime(4));
+        command.Parameters.AddWithValue("@due_date", reader.IsDBNull(5) ? DBNull.Value : reader.GetDateTime(5));
         command.Parameters.AddWithValue("@status", reader.GetString(6));
         command.Parameters.AddWithValue("@subtotal", reader.GetDecimal(7));
         command.Parameters.AddWithValue("@tax_amount", reader.GetDecimal(8));
         command.Parameters.AddWithValue("@total_due", reader.GetDecimal(9));
         command.Parameters.AddWithValue("@notes", reader.GetString(10));
-        command.Parameters.AddWithValue("@created_at", ToUtcDateTime(reader.GetFieldValue<DateTimeOffset>(11)));
-        command.Parameters.AddWithValue("@updated_at", ToUtcDateTime(reader.GetFieldValue<DateTimeOffset>(12)));
+        command.Parameters.AddWithValue("@created_at", reader.GetDateTime(11));
+        command.Parameters.AddWithValue("@updated_at", reader.GetDateTime(12));
     });
 }
 
-static async Task MigrateInvoiceItemsAsync(NpgsqlConnection source, MySqlConnection target, MySqlTransaction transaction)
+static async Task CopyInvoiceItemsAsync(MySqlConnection source, MySqlConnection target, MySqlTransaction transaction)
 {
-    const string selectSql =
-        """
+    const string selectSql = """
         select id, invoice_id, project_item_id, sort_order, item_category, description, quantity, unit_label, unit_price, cost_amount, line_total
         from invoice_items
         order by id;
         """;
 
-    const string insertSql =
-        """
+    const string insertSql = """
         insert into invoice_items
         (id, invoice_id, project_item_id, sort_order, item_category, description, quantity, unit_label, unit_price, cost_amount, line_total)
         values
@@ -509,17 +425,15 @@ static async Task MigrateInvoiceItemsAsync(NpgsqlConnection source, MySqlConnect
     });
 }
 
-static async Task MigrateInvoicePaymentsAsync(NpgsqlConnection source, MySqlConnection target, MySqlTransaction transaction)
+static async Task CopyInvoicePaymentsAsync(MySqlConnection source, MySqlConnection target, MySqlTransaction transaction)
 {
-    const string selectSql =
-        """
+    const string selectSql = """
         select id, invoice_id, payment_date, amount, reference, notes, created_at
         from invoice_payments
         order by id;
         """;
 
-    const string insertSql =
-        """
+    const string insertSql = """
         insert into invoice_payments
         (id, invoice_id, payment_date, amount, reference, notes, created_at)
         values
@@ -530,24 +444,24 @@ static async Task MigrateInvoicePaymentsAsync(NpgsqlConnection source, MySqlConn
     {
         command.Parameters.AddWithValue("@id", reader.GetInt64(0));
         command.Parameters.AddWithValue("@invoice_id", reader.GetInt64(1));
-        command.Parameters.AddWithValue("@payment_date", reader.GetFieldValue<DateOnly>(2).ToDateTime(TimeOnly.MinValue));
+        command.Parameters.AddWithValue("@payment_date", reader.GetDateTime(2));
         command.Parameters.AddWithValue("@amount", reader.GetDecimal(3));
         command.Parameters.AddWithValue("@reference", reader.GetString(4));
         command.Parameters.AddWithValue("@notes", reader.GetString(5));
-        command.Parameters.AddWithValue("@created_at", ToUtcDateTime(reader.GetFieldValue<DateTimeOffset>(6)));
+        command.Parameters.AddWithValue("@created_at", reader.GetDateTime(6));
     });
 }
 
 static async Task CopyRowsAsync(
-    NpgsqlConnection source,
+    MySqlConnection source,
     MySqlConnection target,
     MySqlTransaction transaction,
     string selectSql,
     string insertSql,
-    Action<NpgsqlDataReader, MySqlCommand> bindParameters)
+    Action<MySqlDataReader, MySqlCommand> bindParameters)
 {
-    await using var selectCommand = new NpgsqlCommand(selectSql, source);
-    await using var reader = await selectCommand.ExecuteReaderAsync(CommandBehavior.SequentialAccess);
+    await using var selectCommand = new MySqlCommand(selectSql, source);
+    await using var reader = await selectCommand.ExecuteReaderAsync();
 
     while (await reader.ReadAsync())
     {
@@ -557,28 +471,19 @@ static async Task CopyRowsAsync(
     }
 }
 
-static async Task ResetAutoIncrementAsync(MySqlConnection connection, MySqlTransaction transaction)
+static async Task ResetAutoIncrementAsync(MySqlConnection connection, MySqlTransaction transaction, IEnumerable<string> tableNames)
 {
-    foreach (var tableName in new[] { "clients", "intake_submissions", "projects", "project_items", "invoices", "invoice_items", "invoice_payments" })
+    foreach (var tableName in tableNames)
     {
-        await using var nextIdCommand = new MySqlCommand(
-            $"select coalesce(max(id), 0) + 1 from `{tableName}`;",
-            connection,
-            transaction);
+        await using var nextIdCommand = new MySqlCommand($"select coalesce(max(id), 0) + 1 from `{tableName}`;", connection, transaction);
         var nextId = Convert.ToInt64(await nextIdCommand.ExecuteScalarAsync(), CultureInfo.InvariantCulture);
-
-        await using var alterCommand = new MySqlCommand(
-            $"alter table `{tableName}` auto_increment = {nextId};",
-            connection,
-            transaction);
-        await alterCommand.ExecuteNonQueryAsync();
+        await ExecuteNonQueryAsync(connection, transaction, $"alter table `{tableName}` auto_increment = {nextId};");
     }
 }
 
-static async Task<List<(string TableName, long Count)>> GetTableCountsAsync(MySqlConnection connection)
+static async Task<IReadOnlyList<(string TableName, long Count)>> GetCountsAsync(MySqlConnection connection, IEnumerable<string> tableNames)
 {
-    var tableNames = new[] { "clients", "intake_submissions", "projects", "project_items", "invoices", "invoice_items", "invoice_payments" };
-    var counts = new List<(string TableName, long Count)>(tableNames.Length);
+    var counts = new List<(string TableName, long Count)>();
 
     foreach (var tableName in tableNames)
     {
@@ -590,4 +495,8 @@ static async Task<List<(string TableName, long Count)>> GetTableCountsAsync(MySq
     return counts;
 }
 
-static DateTime ToUtcDateTime(DateTimeOffset value) => value.UtcDateTime;
+static async Task ExecuteNonQueryAsync(MySqlConnection connection, MySqlTransaction transaction, string sql)
+{
+    await using var command = new MySqlCommand(sql, connection, transaction);
+    await command.ExecuteNonQueryAsync();
+}

@@ -20,19 +20,28 @@ builder.Services.AddAuthorization();
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-builder.Services.AddScoped<IIntakeSubmissionStore, PostgresIntakeSubmissionStore>();
-builder.Services.AddScoped<PostgresSchemaInitializer>();
+builder.Services.AddScoped<IIntakeSubmissionStore, MySqlIntakeSubmissionStore>();
+builder.Services.AddScoped<MySqlSchemaInitializer>();
 builder.Services.Configure<AdminAuthSettings>(
     builder.Configuration.GetSection(AdminAuthSettings.SectionName));
-builder.Services.Configure<PostgresSettings>(
-    builder.Configuration.GetSection(PostgresSettings.SectionName));
+builder.Services.Configure<MySqlSettings>(
+    builder.Configuration.GetSection(MySqlSettings.SectionName));
 
 var app = builder.Build();
 
 await using (var scope = app.Services.CreateAsyncScope())
 {
-    var initializer = scope.ServiceProvider.GetRequiredService<PostgresSchemaInitializer>();
-    await initializer.EnsureInitializedAsync();
+    var initializer = scope.ServiceProvider.GetRequiredService<MySqlSchemaInitializer>();
+    var logger = scope.ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger("Startup");
+
+    try
+    {
+        await initializer.EnsureInitializedAsync();
+    }
+    catch (MySqlConnector.MySqlException ex)
+    {
+        logger.LogError(ex, "PureWave startup could not reach MySQL. The site will continue running, but intake storage may be unavailable until database connectivity is fixed.");
+    }
 }
 
 if (!app.Environment.IsDevelopment())

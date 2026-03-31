@@ -1,18 +1,18 @@
 using System.Text;
 using System.Text.Json;
 using Microsoft.Extensions.Options;
-using Npgsql;
+using MySqlConnector;
 using PureWave.Web.Models;
 
 namespace PureWave.Web.Services;
 
-public sealed class PostgresIntakeSubmissionStore(IOptions<PostgresSettings> settings) : IIntakeSubmissionStore
+public sealed class MySqlIntakeSubmissionStore(IOptions<MySqlSettings> settings) : IIntakeSubmissionStore
 {
     private readonly string connectionString = settings.Value.ConnectionString;
 
     public async Task<string> SaveAsync(IntakeQuestionnaire questionnaire, CancellationToken cancellationToken = default)
     {
-        await using var connection = new NpgsqlConnection(connectionString);
+        await using var connection = new MySqlConnection(connectionString);
         await connection.OpenAsync(cancellationToken);
 
         const string sql = """
@@ -67,24 +67,27 @@ public sealed class PostgresIntakeSubmissionStore(IOptions<PostgresSettings> set
                 @existing_equipment,
                 @key_challenges,
                 @contact_preference
-            )
-            returning id;
+            );
             """;
 
         var submittedAt = DateTimeOffset.UtcNow;
 
-        await using var command = new NpgsqlCommand(sql, connection);
+        await using var command = new MySqlCommand(sql, connection);
         AddParameters(command, questionnaire, submittedAt);
+        await command.ExecuteNonQueryAsync(cancellationToken);
 
-        var id = (long)(await command.ExecuteScalarAsync(cancellationToken)
-            ?? throw new InvalidOperationException("Database did not return a submission id."));
+        var id = command.LastInsertedId;
+        if (id <= 0)
+        {
+            throw new InvalidOperationException("Database did not return a submission id.");
+        }
 
         return BuildDownloadName(id, questionnaire.FullName, submittedAt);
     }
 
     public async Task<IReadOnlyList<IntakeSubmissionFile>> ListAsync(CancellationToken cancellationToken = default)
     {
-        await using var connection = new NpgsqlConnection(connectionString);
+        await using var connection = new MySqlConnection(connectionString);
         await connection.OpenAsync(cancellationToken);
 
         const string sql = """
@@ -93,7 +96,7 @@ public sealed class PostgresIntakeSubmissionStore(IOptions<PostgresSettings> set
             order by submitted_at desc, id desc;
             """;
 
-        await using var command = new NpgsqlCommand(sql, connection);
+        await using var command = new MySqlCommand(sql, connection);
         await using var reader = await command.ExecuteReaderAsync(cancellationToken);
 
         var items = new List<IntakeSubmissionFile>();
@@ -101,14 +104,15 @@ public sealed class PostgresIntakeSubmissionStore(IOptions<PostgresSettings> set
         while (await reader.ReadAsync(cancellationToken))
         {
             var id = reader.GetInt64(0);
-            var submittedAt = reader.GetFieldValue<DateTimeOffset>(1).ToLocalTime();
+            var submittedAt = DateTime.SpecifyKind(reader.GetDateTime(1), DateTimeKind.Utc);
+            var localSubmittedAt = new DateTimeOffset(submittedAt).ToLocalTime();
             var fullName = reader.GetString(2);
-            var fileName = BuildDownloadName(id, fullName, submittedAt);
+            var fileName = BuildDownloadName(id, fullName, localSubmittedAt);
 
             items.Add(new IntakeSubmissionFile
             {
                 FileName = fileName,
-                LastModified = submittedAt,
+                LastModified = localSubmittedAt,
                 SizeBytes = 0
             });
         }
@@ -120,7 +124,7 @@ public sealed class PostgresIntakeSubmissionStore(IOptions<PostgresSettings> set
     {
         var id = ParseId(fileName);
 
-        await using var connection = new NpgsqlConnection(connectionString);
+        await using var connection = new MySqlConnection(connectionString);
         await connection.OpenAsync(cancellationToken);
 
         const string sql = """
@@ -153,8 +157,8 @@ public sealed class PostgresIntakeSubmissionStore(IOptions<PostgresSettings> set
             where id = @id;
             """;
 
-        await using var command = new NpgsqlCommand(sql, connection);
-        command.Parameters.AddWithValue("id", id);
+        await using var command = new MySqlCommand(sql, connection);
+        command.Parameters.AddWithValue("@id", id);
 
         await using var reader = await command.ExecuteReaderAsync(cancellationToken);
         if (!await reader.ReadAsync(cancellationToken))
@@ -162,10 +166,11 @@ public sealed class PostgresIntakeSubmissionStore(IOptions<PostgresSettings> set
             throw new FileNotFoundException("The requested intake submission was not found.", fileName);
         }
 
+        var submittedAtUtc = DateTime.SpecifyKind(reader.GetDateTime(1), DateTimeKind.Utc);
         var submission = new DatabaseIntakeSubmission
         {
             Id = reader.GetInt64(0),
-            SubmittedAt = reader.GetFieldValue<DateTimeOffset>(1),
+            SubmittedAt = new DateTimeOffset(submittedAtUtc),
             Questionnaire = new IntakeQuestionnaire
             {
                 FullName = reader.GetString(2),
@@ -198,31 +203,31 @@ public sealed class PostgresIntakeSubmissionStore(IOptions<PostgresSettings> set
         return (new MemoryStream(bytes), BuildDownloadName(submission.Id, submission.Questionnaire.FullName, submission.SubmittedAt));
     }
 
-    private static void AddParameters(NpgsqlCommand command, IntakeQuestionnaire questionnaire, DateTimeOffset submittedAt)
+    private static void AddParameters(MySqlCommand command, IntakeQuestionnaire questionnaire, DateTimeOffset submittedAt)
     {
-        command.Parameters.AddWithValue("submitted_at", submittedAt);
-        command.Parameters.AddWithValue("full_name", questionnaire.FullName);
-        command.Parameters.AddWithValue("email_address", questionnaire.EmailAddress);
-        command.Parameters.AddWithValue("phone_number", questionnaire.PhoneNumber ?? string.Empty);
-        command.Parameters.AddWithValue("suburb_or_area", questionnaire.SuburbOrArea);
-        command.Parameters.AddWithValue("project_stage", questionnaire.ProjectStage);
-        command.Parameters.AddWithValue("interested_plan", questionnaire.InterestedPlan);
-        command.Parameters.AddWithValue("service_mode", questionnaire.ServiceMode);
-        command.Parameters.AddWithValue("service_format", questionnaire.ServiceFormat);
-        command.Parameters.AddWithValue("room_type", questionnaire.RoomType);
-        command.Parameters.AddWithValue("primary_goals", questionnaire.PrimaryGoals);
-        command.Parameters.AddWithValue("room_dimensions", questionnaire.RoomDimensions);
-        command.Parameters.AddWithValue("budget_band", questionnaire.BudgetBand);
-        command.Parameters.AddWithValue("timeline", questionnaire.Timeline);
-        command.Parameters.AddWithValue("needs_acoustic_design", questionnaire.NeedsAcousticDesign);
-        command.Parameters.AddWithValue("needs_calibration", questionnaire.NeedsCalibration);
-        command.Parameters.AddWithValue("needs_automation", questionnaire.NeedsAutomation);
-        command.Parameters.AddWithValue("needs_procurement_advice", questionnaire.NeedsProcurementAdvice);
-        command.Parameters.AddWithValue("needs_existing_equipment_installation", questionnaire.NeedsExistingEquipmentInstallation);
-        command.Parameters.AddWithValue("needs_guidance_only", questionnaire.NeedsGuidanceOnly);
-        command.Parameters.AddWithValue("existing_equipment", questionnaire.ExistingEquipment ?? string.Empty);
-        command.Parameters.AddWithValue("key_challenges", questionnaire.KeyChallenges ?? string.Empty);
-        command.Parameters.AddWithValue("contact_preference", questionnaire.ContactPreference);
+        command.Parameters.AddWithValue("@submitted_at", submittedAt.UtcDateTime);
+        command.Parameters.AddWithValue("@full_name", questionnaire.FullName);
+        command.Parameters.AddWithValue("@email_address", questionnaire.EmailAddress);
+        command.Parameters.AddWithValue("@phone_number", questionnaire.PhoneNumber ?? string.Empty);
+        command.Parameters.AddWithValue("@suburb_or_area", questionnaire.SuburbOrArea);
+        command.Parameters.AddWithValue("@project_stage", questionnaire.ProjectStage);
+        command.Parameters.AddWithValue("@interested_plan", questionnaire.InterestedPlan);
+        command.Parameters.AddWithValue("@service_mode", questionnaire.ServiceMode);
+        command.Parameters.AddWithValue("@service_format", questionnaire.ServiceFormat);
+        command.Parameters.AddWithValue("@room_type", questionnaire.RoomType);
+        command.Parameters.AddWithValue("@primary_goals", questionnaire.PrimaryGoals);
+        command.Parameters.AddWithValue("@room_dimensions", questionnaire.RoomDimensions);
+        command.Parameters.AddWithValue("@budget_band", questionnaire.BudgetBand);
+        command.Parameters.AddWithValue("@timeline", questionnaire.Timeline);
+        command.Parameters.AddWithValue("@needs_acoustic_design", questionnaire.NeedsAcousticDesign);
+        command.Parameters.AddWithValue("@needs_calibration", questionnaire.NeedsCalibration);
+        command.Parameters.AddWithValue("@needs_automation", questionnaire.NeedsAutomation);
+        command.Parameters.AddWithValue("@needs_procurement_advice", questionnaire.NeedsProcurementAdvice);
+        command.Parameters.AddWithValue("@needs_existing_equipment_installation", questionnaire.NeedsExistingEquipmentInstallation);
+        command.Parameters.AddWithValue("@needs_guidance_only", questionnaire.NeedsGuidanceOnly);
+        command.Parameters.AddWithValue("@existing_equipment", questionnaire.ExistingEquipment ?? string.Empty);
+        command.Parameters.AddWithValue("@key_challenges", questionnaire.KeyChallenges ?? string.Empty);
+        command.Parameters.AddWithValue("@contact_preference", questionnaire.ContactPreference);
     }
 
     private static string BuildDownloadName(long id, string fullName, DateTimeOffset submittedAt)

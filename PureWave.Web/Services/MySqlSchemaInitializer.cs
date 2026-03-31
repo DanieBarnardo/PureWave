@@ -1,28 +1,28 @@
 using Microsoft.Extensions.Options;
 using MySqlConnector;
-using PureWave.Admin.Models;
+using PureWave.Web.Models;
 
-namespace PureWave.Admin.Services;
+namespace PureWave.Web.Services;
 
-public sealed class AdminSchemaInitializer(
+public sealed class MySqlSchemaInitializer(
     IWebHostEnvironment environment,
     IOptions<MySqlSettings> settings,
-    ILogger<AdminSchemaInitializer> logger)
+    ILogger<MySqlSchemaInitializer> logger)
 {
+    private readonly string scriptPath = Path.Combine(environment.ContentRootPath, "Database", "001_create_intake_submissions.sql");
     private readonly string connectionString = settings.Value.ConnectionString;
-    private readonly string scriptPath = Path.Combine(environment.ContentRootPath, "Database", "001_create_admin_schema.sql");
 
     public async Task EnsureInitializedAsync(CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(connectionString))
         {
-            logger.LogWarning("Admin app MySQL connection string is empty. Schema initialization skipped.");
+            logger.LogWarning("MySQL connection string is empty. Database initialization was skipped.");
             return;
         }
 
         if (!File.Exists(scriptPath))
         {
-            logger.LogWarning("Admin schema script was not found at {ScriptPath}. Schema initialization skipped.", scriptPath);
+            logger.LogWarning("MySQL schema script was not found at {ScriptPath}. Database initialization was skipped.", scriptPath);
             return;
         }
 
@@ -43,6 +43,8 @@ public sealed class AdminSchemaInitializer(
         await EnsureColumnAsync(connection, "intake_submissions", "service_mode", "varchar(120) not null default ''", cancellationToken);
         await EnsureColumnAsync(connection, "intake_submissions", "service_format", "varchar(120) not null default ''", cancellationToken);
         await EnsureColumnAsync(connection, "intake_submissions", "client_id", "bigint null", cancellationToken);
+
+        logger.LogInformation("PureWave intake database schema ensured.");
     }
 
     private static async Task EnsureColumnAsync(
