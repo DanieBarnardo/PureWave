@@ -6,12 +6,10 @@ Derived from the business plan's "not yet implemented" items, confirmed against 
 
 ## High Priority
 
-### WhatsApp CTA Button
-The site describes a WhatsApp-first contact process on both the Home and Remote pages, but there is no clickable link or button anywhere. A prospective client has no mechanism to actually start the process from the site.
-
-- Add a WhatsApp link button to the Remote page (primary location)
-- Add a WhatsApp link to the Home page remote section
-- Add the WhatsApp number to a config/settings location so it can be updated in one place
+### ~~WhatsApp CTA Button~~ ✅ Done
+- Button added to Remote page ("Start on WhatsApp") with pre-filled message
+- Button added to Home page remote section ("Message on WhatsApp")
+- Number centralised in `PureWave.Web/Data/SiteConfig.cs`
 
 ---
 
