@@ -21,11 +21,14 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
 builder.Services.AddScoped<IIntakeSubmissionStore, MySqlIntakeSubmissionStore>();
+builder.Services.AddScoped<IIntakeNotificationService, SmtpIntakeNotificationService>();
 builder.Services.AddScoped<MySqlSchemaInitializer>();
 builder.Services.Configure<AdminAuthSettings>(
     builder.Configuration.GetSection(AdminAuthSettings.SectionName));
 builder.Services.Configure<MySqlSettings>(
     builder.Configuration.GetSection(MySqlSettings.SectionName));
+builder.Services.Configure<SmtpSettings>(
+    builder.Configuration.GetSection(SmtpSettings.SectionName));
 
 var app = builder.Build();
 
