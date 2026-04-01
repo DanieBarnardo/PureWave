@@ -1,6 +1,7 @@
 @page "/intake"
 @rendermode InteractiveServer
 @inject IIntakeSubmissionStore IntakeSubmissionStore
+@inject IIntakeNotificationService IntakeNotificationService
 @inject ILogger<Pages.Intake> Logger
 
 <PageTitle>PureWave | Intake Questionnaire</PageTitle>
@@ -431,6 +432,7 @@ else
             IsSubmitting = true;
             ErrorMessage = null;
             SavedFileName = await IntakeSubmissionStore.SaveAsync(Model);
+            await IntakeNotificationService.NotifyAsync(Model);
             IsSubmitted = true;
         }
         catch (Exception ex)
