@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "PureWave.Web",
+      "runtimeExecutable": "dotnet",
+      "runtimeArgs": ["run", "--project", "PureWave.Web/PureWave.Web.csproj", "--launch-profile", "https"],
+      "port": 7038
+    }
+  ]
+}
