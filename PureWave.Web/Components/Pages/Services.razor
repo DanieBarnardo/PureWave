@@ -1,0 +1,105 @@
+@page "/services"
+@using PureWave.Web.Data
+
+<PageTitle>PureWave | Services</PageTitle>
+
+<section class="page-intro">
+    <span class="section-tag">Services</span>
+    <h1>Smart home automation and media systems that make your space work the way you want it to.</h1>
+    <p>
+        Beyond acoustic design and calibration, PureWave helps clients build intelligent spaces — rooms that respond to what you're doing,
+        libraries that manage themselves, and systems that remove friction from how you watch and listen.
+    </p>
+</section>
+
+<section class="section-band">
+    <div class="section-heading">
+        <span class="section-tag">Smart Home</span>
+        <h2>Take control of your space with Home Assistant.</h2>
+    </div>
+
+    <img src="/images/services-smarthome.png"
+         alt="Home Assistant smart home automation"
+         style="width:100%;border-radius:22px;display:block;margin-bottom:1.5rem;" />
+
+    <p>
+        Home Assistant is an open-source home automation platform that runs locally on your network — no cloud subscription,
+        no data leaving your home, no dependency on a third-party service staying alive. It connects your lights, climate system,
+        AV equipment, and sensors into a single dashboard you control from your phone, a tablet, or a wall panel.
+    </p>
+
+    <div class="process-grid" style="margin-top:1.5rem;">
+        <article>
+            <span>01</span>
+            <h3>Movie Mode</h3>
+            <p>One tap dims the lights to cinema level, fires up the projector, closes the blinds, and adjusts the climate — all before the opening credits roll.</p>
+        </article>
+        <article>
+            <span>02</span>
+            <h3>Intelligent Sensors</h3>
+            <p>Zigbee and ESP sensors detect presence, measure ambient light, and monitor air quality — the room adjusts automatically without you touching anything.</p>
+        </article>
+        <article>
+            <span>03</span>
+            <h3>One Dashboard</h3>
+            <p>Replace the multi-remote clutter with a single interface. Scenes, schedules, and automations all live in one place, accessible from anywhere on your network.</p>
+        </article>
+    </div>
+</section>
+
+<section class="section-band">
+    <div class="section-heading">
+        <span class="section-tag">Media Automation</span>
+        <h2>Your own private streaming platform — no subscriptions, no disappearing content.</h2>
+    </div>
+
+    <img src="/images/services-cinema.png"
+         alt="Movie automation with Plex"
+         style="width:100%;border-radius:22px;display:block;margin-bottom:1.5rem;" />
+
+    <p>
+        Streaming services raise prices, remove titles, and split libraries across multiple platforms. Media automation gives you a self-managed
+        alternative: a personal library with a Netflix-quality interface, true 4K HDR quality, and content available on every screen in your home
+        — with no monthly fee once it's running.
+    </p>
+
+    <div class="process-grid" style="margin-top:1.5rem;">
+        <article>
+            <span>01</span>
+            <h3>Plex</h3>
+            <p>The front end — displays your library with posters, metadata, and trailers. Tracks watch history and resumes across every device you own.</p>
+        </article>
+        <article>
+            <span>02</span>
+            <h3>Sonarr</h3>
+            <p>TV automation — monitors for new episodes and downloads them automatically in the highest available quality the moment they're released.</p>
+        </article>
+        <article>
+            <span>03</span>
+            <h3>Radarr</h3>
+            <p>Movie automation — grabs films as soon as they become available in your preferred format, from 1080p to full 4K HDR.</p>
+        </article>
+    </div>
+
+    <div class="section-block">
+        <h3>How it works end to end</h3>
+        <p>
+            You request a title. The system searches for the best available version, downloads and processes it automatically,
+            and Plex notifies you when it's ready to watch. No manual file management, no waiting for someone else's release schedule.
+        </p>
+    </div>
+</section>
+
+<section class="section-band" style="text-align:center;">
+    <span class="section-tag">Get Started</span>
+    <h2>Interested in smart home setup or building a media system?</h2>
+    <p style="margin-bottom:1.5rem;">
+        Start with a WhatsApp message — describe what you want your space to do and PureWave will talk you through the options.
+    </p>
+    <a class="button-primary"
+       href="@SiteConfig.WhatsAppOnSiteUrl"
+       target="_blank"
+       rel="noopener noreferrer">
+        <WhatsAppIcon /> Ask about smart home setup
+    </a>
+</section>
