@@ -13,13 +13,13 @@ Derived from the business plan's "not yet implemented" items, confirmed against 
 
 ---
 
-### File Upload Support on Intake Form
-`IntakeSubmissionFile.cs` already exists as a model but is completely unwired. No upload UI, no storage, no persistence.
+### ~~File Upload Support on Intake Form~~ — Later
+Deferred: server storage is limited to 1 GB. Revisit when storage is upgraded or an external storage option (e.g. object storage) is available.
 
-- Add file input to the intake form (room photos, floor plan sketches, existing equipment lists)
-- Wire `IntakeSubmissionFile` to the intake submission store
-- Store files alongside the intake record (local filesystem or object storage)
-- Surface uploaded files in the admin intake viewer
+~~- Add file input to the intake form (room photos, floor plan sketches, existing equipment lists)~~
+~~- Wire `IntakeSubmissionFile` to the intake submission store~~
+~~- Store files alongside the intake record (local filesystem or object storage)~~
+~~- Surface uploaded files in the admin intake viewer~~
 
 ---
 
@@ -42,12 +42,9 @@ Documented as the primary go-to-market tactic in the business plan. Nothing exis
 
 ---
 
-### Smart Home / Automation as a Named Service
-Home Assistant automation (Movie Mode, Zigbee/ESP sensors, environmental triggers) is described as a core differentiator in the business documents. On the site it is only an unchecked checkbox in the intake form.
-
-- Add a section or page describing the smart home and automation capability
-- Surface it on the Plans page or as a standalone service description
-- Connect it to The Director plan as a key deliverable highlight
+### ~~Smart Home / Automation as a Named Service~~ ✅ Done
+- `/services` page created with Home Assistant and media automation (Plex/Sonarr/Radarr) sections
+- Linked from Home page and NavMenu (item 05)
 
 ---
 
