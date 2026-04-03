@@ -6,6 +6,11 @@ Derived from the business plan's "not yet implemented" items, confirmed against 
 
 ## High Priority
 
+### Plan Card Pricing Anchors
+Add pricing anchors to each plan card on the Plans page (e.g. "From R X,XXX") to give visitors a budget sense before they commit to the intake form. Requires owner confirmation on figures before publishing.
+
+---
+
 ### ~~WhatsApp CTA Button~~ ✅ Done
 - Button added to Remote page ("Start on WhatsApp") with pre-filled message
 - Button added to Home page remote section ("Message on WhatsApp")

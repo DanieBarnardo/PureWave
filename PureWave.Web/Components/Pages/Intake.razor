@@ -69,17 +69,56 @@
             <p>@Model.RoomDimensions</p>
         </div>
 
+        <div class="section-heading">
+            <span class="section-tag">What happens next</span>
+        </div>
+
+        <div class="process-grid">
+            <article>
+                <span>01</span>
+                <h3>PureWave reviews your brief</h3>
+                <p>Your brief is read and assessed — usually within 24 hours.</p>
+            </article>
+            <article>
+                <span>02</span>
+                <h3>You hear back on WhatsApp or email</h3>
+                <p>PureWave will reach out via your preferred contact method to discuss the right next step.</p>
+            </article>
+            <article>
+                <span>03</span>
+                <h3>The consultation is scheduled around you</h3>
+                <p>The session is arranged at a time that suits you, with the brief already in hand.</p>
+            </article>
+        </div>
+
         <button class="button-secondary" @onclick="StartNewSubmission">Start a new intake</button>
     </section>
 }
 else
 {
-    <EditForm Model="Model" FormName="purewave-intake" OnValidSubmit="HandleValidSubmit" class="intake-form">
+    <div class="form-progress">
+        @for (int i = 1; i <= TotalSteps; i++)
+        {
+            var stepIndex = i;
+            <div class="form-progress-step @(stepIndex == CurrentStep ? "active" : stepIndex < CurrentStep ? "done" : "")">
+                <span class="step-dot">@stepIndex</span>
+                <span class="step-label">@StepLabels[stepIndex - 1]</span>
+            </div>
+        }
+    </div>
+
+    <EditForm EditContext="_editContext" FormName="purewave-intake" OnValidSubmit="HandleValidSubmit" class="intake-form">
         <DataAnnotationsValidator />
-        <ValidationSummary class="validation-summary" />
-        <div class="form-grid">
+
+        @if (ShowStepErrors)
+        {
+            <ValidationSummary class="validation-summary" />
+        }
+
+        @if (CurrentStep == 1)
+        {
             <section class="form-card">
-                <h2>Contact</h2>
+                <h2>About you</h2>
 
                 <label>
                     Full name
@@ -105,9 +144,17 @@ else
                     <ValidationMessage For="@(() => Model.SuburbOrArea)" />
                 </label>
             </section>
+        }
 
+        @if (CurrentStep == 2)
+        {
             <section class="form-card">
-                <h2>Project scope</h2>
+                <h2>Your project</h2>
+
+                @if (ShowServiceModeWarning)
+                {
+                    <p class="form-reset-warning">Changing service mode reset some of your earlier selections.</p>
+                }
 
                 <label>
                     Service mode
@@ -197,37 +244,47 @@ else
                     <ValidationMessage For="@(() => Model.Timeline)" />
                 </label>
             </section>
+        }
 
+        @if (CurrentStep == 3)
+        {
             <section class="form-card form-card-wide">
-                <h2>Technical brief</h2>
+                <h2>About the room</h2>
 
                 <label>
                     Primary goals
-                    <InputTextArea @bind-Value="Model.PrimaryGoals" class="form-input form-textarea" />
+                    <InputTextArea @bind-Value="Model.PrimaryGoals" class="form-input form-textarea"
+                        placeholder="e.g. Better dialogue clarity, more bass impact for movies, cleaner stereo imaging for music" />
                     <ValidationMessage For="@(() => Model.PrimaryGoals)" />
                 </label>
 
                 <label>
                     Room dimensions or room notes
-                    <InputTextArea @bind-Value="Model.RoomDimensions" class="form-input" />
+                    <InputTextArea @bind-Value="Model.RoomDimensions" class="form-input"
+                        placeholder="e.g. 5m wide × 6m deep × 2.7m high, carpeted floor, one large window on the side wall" />
                     <ValidationMessage For="@(() => Model.RoomDimensions)" />
                 </label>
 
                 <label>
                     Existing equipment
-                    <InputTextArea @bind-Value="Model.ExistingEquipment" class="form-input" />
+                    <InputTextArea @bind-Value="Model.ExistingEquipment" class="form-input"
+                        placeholder="e.g. Denon AVR-X2700H, Polk Audio T50 fronts, no subwoofer yet" />
                     <ValidationMessage For="@(() => Model.ExistingEquipment)" />
                 </label>
 
                 <label>
                     Current challenges
-                    <InputTextArea @bind-Value="Model.KeyChallenges" class="form-input" />
+                    <InputTextArea @bind-Value="Model.KeyChallenges" class="form-input"
+                        placeholder="e.g. Muddy bass, dialogue hard to hear at normal volume, echo on hard surfaces" />
                     <ValidationMessage For="@(() => Model.KeyChallenges)" />
                 </label>
             </section>
+        }
 
+        @if (CurrentStep == 4)
+        {
             <section class="form-card">
-                <h2>Services of interest</h2>
+                <h2>Services &amp; follow-up</h2>
 
                 @if (ShowAcousticDesign)
                 {
@@ -276,10 +333,6 @@ else
                         <span>Guidance and advice only</span>
                     </label>
                 }
-            </section>
-
-            <section class="form-card">
-                <h2>Follow-up</h2>
 
                 <label>
                     Preferred contact method
@@ -294,10 +347,10 @@ else
 
                 <div class="form-tip">
                     <strong>What happens next</strong>
-                    <p>Once submitted, PureWave can review the brief and guide you toward the right next step. For remote work, the process starts with WhatsApp and the consultation slot is arranged at your convenience.</p>
+                    <p>Once submitted, PureWave reviews the brief and guides you toward the right next step. For remote work, the process starts with WhatsApp and the consultation slot is arranged at your convenience.</p>
                 </div>
             </section>
-        </div>
+        }
 
         @if (!string.IsNullOrWhiteSpace(ErrorMessage))
         {
@@ -305,20 +358,75 @@ else
         }
 
         <div class="form-actions">
-            <button type="submit" class="button-primary" disabled="@IsSubmitting">
-                @(IsSubmitting ? "Saving..." : "Submit questionnaire")
-            </button>
-            <a class="button-secondary" href="/plans">Review plans again</a>
+            @if (CurrentStep > 1)
+            {
+                <button type="button" class="button-secondary" @onclick="PreviousStep">← Back</button>
+            }
+            @if (CurrentStep < TotalSteps)
+            {
+                <button type="button" class="button-primary" @onclick="NextStep">Next →</button>
+                @if (CurrentStep == 1)
+                {
+                    <a class="button-secondary" href="/plans">Review plans again</a>
+                }
+            }
+            else
+            {
+                <button type="submit" class="button-primary" disabled="@IsSubmitting">
+                    @(IsSubmitting ? "Saving..." : "Submit questionnaire")
+                </button>
+            }
         </div>
     </EditForm>
 }
 
 @code {
     private IntakeQuestionnaire Model { get; set; } = new();
+    private EditContext _editContext = null!;
     private bool IsSubmitted { get; set; }
     private bool IsSubmitting { get; set; }
     private string? ErrorMessage { get; set; }
     private string? SavedFileName { get; set; }
+    private int CurrentStep { get; set; } = 1;
+    private const int TotalSteps = 4;
+    private bool ShowStepErrors { get; set; }
+    private bool ShowServiceModeWarning { get; set; }
+
+    private static readonly string[] StepLabels = ["About you", "Your project", "About the room", "Services & follow-up"];
+
+    private static readonly string[] Step1Fields =
+    [
+        nameof(IntakeQuestionnaire.FullName),
+        nameof(IntakeQuestionnaire.EmailAddress),
+        nameof(IntakeQuestionnaire.PhoneNumber),
+        nameof(IntakeQuestionnaire.SuburbOrArea)
+    ];
+
+    private static readonly string[] Step2Fields =
+    [
+        nameof(IntakeQuestionnaire.ServiceMode),
+        nameof(IntakeQuestionnaire.ServiceFormat),
+        nameof(IntakeQuestionnaire.ProjectStage),
+        nameof(IntakeQuestionnaire.InterestedPlan),
+        nameof(IntakeQuestionnaire.RoomType),
+        nameof(IntakeQuestionnaire.BudgetBand),
+        nameof(IntakeQuestionnaire.Timeline)
+    ];
+
+    private static readonly string[] Step3Fields =
+    [
+        nameof(IntakeQuestionnaire.PrimaryGoals),
+        nameof(IntakeQuestionnaire.RoomDimensions),
+        nameof(IntakeQuestionnaire.ExistingEquipment),
+        nameof(IntakeQuestionnaire.KeyChallenges)
+    ];
+
+    private static readonly string[] Step4Fields =
+    [
+        nameof(IntakeQuestionnaire.ContactPreference)
+    ];
+
+    private static readonly string[][] AllStepFields = [Step1Fields, Step2Fields, Step3Fields, Step4Fields];
 
     private static readonly string[] ServiceModeOptions =
     [
@@ -431,6 +539,41 @@ else
         ? "Remote acoustic and layout strategy"
         : "Acoustic design and treatment strategy";
 
+    protected override void OnInitialized()
+    {
+        _editContext = new EditContext(Model);
+    }
+
+    private void NextStep()
+    {
+        ShowStepErrors = false;
+        _editContext.Validate();
+
+        var currentStepFields = AllStepFields[CurrentStep - 1];
+        bool hasErrors = currentStepFields.Any(field =>
+            _editContext.GetValidationMessages(new FieldIdentifier(Model, field)).Any());
+
+        if (hasErrors)
+        {
+            ShowStepErrors = true;
+        }
+        else
+        {
+            CurrentStep++;
+            ShowServiceModeWarning = false;
+        }
+    }
+
+    private void PreviousStep()
+    {
+        if (CurrentStep > 1)
+        {
+            CurrentStep--;
+            ShowStepErrors = false;
+            ShowServiceModeWarning = false;
+        }
+    }
+
     private async Task HandleValidSubmit()
     {
         try
@@ -455,14 +598,22 @@ else
     private void StartNewSubmission()
     {
         Model = new IntakeQuestionnaire();
+        _editContext = new EditContext(Model);
         IsSubmitted = false;
         ErrorMessage = null;
         IsSubmitting = false;
         SavedFileName = null;
+        CurrentStep = 1;
+        ShowStepErrors = false;
+        ShowServiceModeWarning = false;
     }
 
     private void OnServiceModeChanged(string value)
     {
+        bool hadDependents = !string.IsNullOrEmpty(Model.ProjectStage)
+            || !string.IsNullOrEmpty(Model.InterestedPlan)
+            || !string.IsNullOrEmpty(Model.ServiceFormat);
+
         Model.ServiceMode = value;
 
         if (!ProjectStageOptions.Contains(Model.ProjectStage))
@@ -486,6 +637,7 @@ else
             Model.NeedsAutomation = false;
             Model.NeedsExistingEquipmentInstallation = false;
         }
-    }
 
+        ShowServiceModeWarning = hadDependents;
+    }
 }

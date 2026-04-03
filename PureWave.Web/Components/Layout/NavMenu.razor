@@ -56,13 +56,17 @@
             </span>
         </NavLink>
 
-        <NavLink class="nav-link" href="admin/intakes">
-            <span class="nav-kicker">07</span>
-            <span>
-                <strong>Admin</strong>
-                <small>Browse saved intakes</small>
-            </span>
-        </NavLink>
+        <AuthorizeView>
+            <Authorized>
+                <NavLink class="nav-link" href="admin/intakes">
+                    <span class="nav-kicker">07</span>
+                    <span>
+                        <strong>Admin</strong>
+                        <small>Browse saved intakes</small>
+                    </span>
+                </NavLink>
+            </Authorized>
+        </AuthorizeView>
     </nav>
 
     <div class="sidebar-note">
