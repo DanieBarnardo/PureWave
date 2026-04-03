@@ -20,26 +20,41 @@ public sealed class SmtpIntakeNotificationService(
             return;
         }
 
+        using var client = new SmtpClient(_settings.Host, _settings.Port)
+        {
+            Credentials = new NetworkCredential(_settings.Username, _settings.Password),
+            EnableSsl = false
+        };
+
+        // Internal notification to intake@purewaveacoustic.co.za
         try
         {
-            using var client = new SmtpClient(_settings.Host, _settings.Port)
-            {
-                Credentials = new NetworkCredential(_settings.Username, _settings.Password),
-                EnableSsl = false
-            };
-
-            using var message = BuildMessage(questionnaire);
-            await client.SendMailAsync(message, cancellationToken);
-
+            using var notification = BuildNotification(questionnaire);
+            await client.SendMailAsync(notification, cancellationToken);
             logger.LogInformation("Intake notification sent for {FullName} ({Email}).", questionnaire.FullName, questionnaire.EmailAddress);
         }
         catch (Exception ex)
         {
             logger.LogError(ex, "Failed to send intake notification for {FullName} ({Email}).", questionnaire.FullName, questionnaire.EmailAddress);
         }
+
+        // Confirmation to the customer
+        if (!string.IsNullOrWhiteSpace(questionnaire.EmailAddress))
+        {
+            try
+            {
+                using var confirmation = BuildConfirmation(questionnaire);
+                await client.SendMailAsync(confirmation, cancellationToken);
+                logger.LogInformation("Intake confirmation sent to {Email}.", questionnaire.EmailAddress);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Failed to send intake confirmation to {Email}.", questionnaire.EmailAddress);
+            }
+        }
     }
 
-    private MailMessage BuildMessage(IntakeQuestionnaire q)
+    private MailMessage BuildNotification(IntakeQuestionnaire q)
     {
         var subject = $"New intake: {q.FullName} — {q.InterestedPlan} ({q.ServiceMode})";
 
@@ -94,5 +109,40 @@ public sealed class SmtpIntakeNotificationService(
         message.ReplyToList.Add(new MailAddress(q.EmailAddress, q.FullName));
 
         return message;
+    }
+
+    private MailMessage BuildConfirmation(IntakeQuestionnaire q)
+    {
+        var subject = $"PureWave received your brief, {q.FullName.Split(' ')[0]}";
+
+        var body = new StringBuilder();
+        body.AppendLine($"Hi {q.FullName.Split(' ')[0]},");
+        body.AppendLine();
+        body.AppendLine("Your intake brief has been received. Here is a summary of what was captured:");
+        body.AppendLine();
+        body.AppendLine($"  Plan:            {q.InterestedPlan}");
+        body.AppendLine($"  Service mode:    {q.ServiceMode}");
+        body.AppendLine($"  Project stage:   {q.ProjectStage}");
+        body.AppendLine($"  Budget band:     {q.BudgetBand}");
+        body.AppendLine($"  Timeline:        {q.Timeline}");
+        body.AppendLine($"  Contact via:     {q.ContactPreference}");
+        body.AppendLine();
+        body.AppendLine("What happens next:");
+        body.AppendLine();
+        body.AppendLine("  1. PureWave reviews your brief — usually within 24 hours.");
+        body.AppendLine("  2. You will hear back via your preferred contact method.");
+        body.AppendLine("  3. A consultation slot is arranged at a time that suits you.");
+        body.AppendLine();
+        body.AppendLine("If you have anything to add in the meantime, just reply to this email.");
+        body.AppendLine();
+        body.AppendLine("Danie Barnardo");
+        body.AppendLine("PureWave Home Theatre Consultancy");
+        body.AppendLine("purewaveacoustic.co.za");
+
+        return new MailMessage(
+            from: _settings.FromAddress,
+            to: q.EmailAddress,
+            subject: subject,
+            body: body.ToString());
     }
 }
