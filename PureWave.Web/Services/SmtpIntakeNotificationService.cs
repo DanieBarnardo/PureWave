@@ -85,10 +85,14 @@ public sealed class SmtpIntakeNotificationService(
             body.AppendLine($"Key challenges:\n{q.KeyChallenges}");
         }
 
-        return new MailMessage(
+        var message = new MailMessage(
             from: _settings.FromAddress,
             to: _settings.NotificationAddress,
             subject: subject,
             body: body.ToString());
+
+        message.ReplyToList.Add(new MailAddress(q.EmailAddress, q.FullName));
+
+        return message;
     }
 }

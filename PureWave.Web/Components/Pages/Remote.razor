@@ -55,55 +55,13 @@
     </div>
 </section>
 
-<section class="plans-grid">
-    @foreach (var plan in PureWavePlans.All.Where(static x => x.ServiceTrack == "Remote"))
-    {
-        <article class="plan-detail-card" id="@plan.Slug">
-            <div class="plan-header">
-                <span class="section-tag">@plan.ServiceTrack</span>
-                <span class="plan-accent">@plan.AccentLabel</span>
-                <h2>@plan.Name</h2>
-                <p>@plan.Tagline</p>
-            </div>
-
-            <div class="plan-meta">
-                <div>
-                    <span>Best for</span>
-                    <strong>@plan.BestFor</strong>
-                </div>
-                <div>
-                    <span>Pricing model</span>
-                    <strong>@plan.PricingModel</strong>
-                </div>
-                <div>
-                    <span>Format</span>
-                    <strong>@plan.Turnaround</strong>
-                </div>
-            </div>
-
-            <div class="plan-columns">
-                <div>
-                    <h3>Included</h3>
-                    <ul class="feature-list">
-                        @foreach (var item in plan.Deliverables)
-                        {
-                            <li>@item</li>
-                        }
-                    </ul>
-                </div>
-
-                <div>
-                    <h3>What this solves</h3>
-                    <ul class="feature-list feature-list-soft">
-                        @foreach (var item in plan.Outcomes)
-                        {
-                            <li>@item</li>
-                        }
-                    </ul>
-                </div>
-            </div>
-        </article>
-    }
+<section class="section-band">
+    <div class="section-heading">
+        <span class="section-tag">Remote Plans</span>
+        <h2>Two plans designed for clients who need planning or procurement help from anywhere.</h2>
+        <p>The Virtual Blueprint covers room layout and wiring logic. The Procurement Report gives you independent equipment research and South African pricing context.</p>
+    </div>
+    <a class="button-secondary" href="/plans#remote">See remote plans in full →</a>
 </section>
 
 <section class="comparison-band">
