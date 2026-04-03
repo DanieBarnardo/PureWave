@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Back shortly — PureWave Acoustic</title>
+    <style>
+        :root {
+            --pw-bg: #0d1422;
+            --pw-panel: rgba(13, 21, 35, 0.84);
+            --pw-border: rgba(255, 255, 255, 0.08);
+            --pw-text: #eef2f9;
+            --pw-muted: rgba(238, 242, 249, 0.72);
+            --pw-gold: #d6a167;
+            --pw-gold-deep: #9a683e;
+            --pw-shadow: 0 24px 70px rgba(3, 7, 14, 0.38);
+        }
+
+        *, *::before, *::after { box-sizing: border-box; }
+
+        html, body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: "Aptos", "Trebuchet MS", sans-serif;
+            color: var(--pw-text);
+            background: var(--pw-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .card {
+            max-width: 36rem;
+            width: calc(100% - 2rem);
+            padding: 2.4rem 2rem;
+            border-radius: 34px;
+            border: 1px solid var(--pw-border);
+            background: var(--pw-panel);
+            box-shadow: var(--pw-shadow);
+            backdrop-filter: blur(18px);
+            text-align: center;
+        }
+
+        .logo {
+            display: block;
+            width: 8rem;
+            margin: 0 auto 1.8rem;
+        }
+
+        .kicker {
+            display: inline-block;
+            text-transform: uppercase;
+            letter-spacing: 0.18em;
+            font-size: 0.74rem;
+            color: var(--pw-gold);
+            margin-bottom: 0.75rem;
+        }
+
+        h1 {
+            margin: 0 0 1rem;
+            font-family: "Palatino Linotype", "Book Antiqua", Georgia, serif;
+            font-weight: 600;
+            font-size: clamp(1.6rem, 4vw, 2.2rem);
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+        }
+
+        p {
+            margin: 0 auto;
+            max-width: 44ch;
+            line-height: 1.65;
+            color: var(--pw-muted);
+        }
+
+        .divider {
+            width: 2.5rem;
+            height: 2px;
+            background: linear-gradient(90deg, var(--pw-gold), var(--pw-gold-deep));
+            border: none;
+            border-radius: 2px;
+            margin: 1.5rem auto;
+        }
+
+        .contact {
+            margin-top: 1.6rem;
+            font-size: 0.88rem;
+            color: var(--pw-muted);
+        }
+
+        .contact a {
+            color: var(--pw-gold);
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <img class="logo" src="/images/pure-wave-logo.png" alt="PureWave Acoustic" />
+        <span class="kicker">Scheduled update</span>
+        <h1>Back in a moment.</h1>
+        <hr class="divider" />
+        <p>The site is updating. It will be live again shortly — no changes to your booking or inquiry.</p>
+        <p class="contact">Questions? <a href="https://wa.me/27672397864">WhatsApp us</a></p>
+    </div>
+</body>
+</html>

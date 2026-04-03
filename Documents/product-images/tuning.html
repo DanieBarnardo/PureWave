@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1080" />
+<title>The Tuning — PureWave</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { width: 1080px; height: 1080px; overflow: hidden; font-family: 'Inter', system-ui, sans-serif; color: #e8e4dc; }
+  .card {
+    width: 1080px; height: 1080px; position: relative;
+    display: flex; flex-direction: column; justify-content: space-between;
+    padding: 64px 76px 60px; overflow: hidden;
+  }
+  .bg {
+    position: absolute; inset: 0;
+    background: url('bg-cinema.png') center 60% / cover no-repeat;
+    transform: scale(1.08); filter: blur(14px); z-index: 0;
+  }
+  .overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(160deg, rgba(6,6,10,0.95) 0%, rgba(6,6,10,0.87) 50%, rgba(6,6,10,0.95) 100%);
+    z-index: 1;
+  }
+  .glow {
+    position: absolute; top: -120px; right: -120px; width: 560px; height: 560px;
+    background: radial-gradient(circle, rgba(201,169,110,0.18) 0%, transparent 68%);
+    z-index: 2; pointer-events: none;
+  }
+  .accent-bar {
+    position: absolute; left: 0; top: 0; width: 5px; height: 100%;
+    background: linear-gradient(to bottom, transparent 8%, #c9a96e 35%, #c9a96e 65%, transparent 92%);
+    z-index: 3;
+  }
+  .top, .middle, .bottom { position: relative; z-index: 4; }
+  .top { display: flex; justify-content: space-between; align-items: flex-start; }
+  .logo-wrap { display: flex; align-items: center; gap: 14px; }
+  .logo-icon-clip {
+    width: 74px; height: 74px; border-radius: 50%; overflow: hidden;
+    flex-shrink: 0; border: 1px solid rgba(201,169,110,0.35); background: rgba(0,0,0,0.4);
+  }
+  .logo-icon-clip img { width: 210px; height: auto; margin-left: -68px; margin-top: -10px; }
+  .logo-text { display: flex; flex-direction: column; gap: 2px; }
+  .logo-name { font-size: 17px; font-weight: 700; letter-spacing: 0.13em; text-transform: uppercase; color: #e8e4dc; }
+  .logo-sub { font-size: 11px; font-weight: 400; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(201,169,110,0.7); }
+  .badge {
+    font-size: 12.5px; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase;
+    color: #c9a96e; border: 1px solid rgba(201,169,110,0.45); border-radius: 100px; padding: 8px 22px;
+    background: rgba(201,169,110,0.07); backdrop-filter: blur(4px); align-self: flex-start;
+  }
+  .track {
+    font-size: 13px; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase;
+    color: rgba(201,169,110,0.65); margin-bottom: 18px;
+  }
+  .plan-name {
+    font-size: 100px; font-weight: 800; line-height: 0.9;
+    letter-spacing: -0.035em; color: #e8e4dc; margin-bottom: 28px;
+  }
+  .plan-name .gold { color: #c9a96e; }
+  .tagline {
+    font-size: 20px; font-weight: 400; line-height: 1.5;
+    color: rgba(232,228,220,0.58); max-width: 640px; margin-bottom: 44px;
+  }
+  .deliverables { display: flex; flex-direction: column; gap: 15px; }
+  .deliverable {
+    display: flex; align-items: flex-start; gap: 16px;
+    font-size: 18.5px; font-weight: 400; line-height: 1.4; color: rgba(232,228,220,0.80);
+  }
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: #c9a96e; flex-shrink: 0; margin-top: 7px; }
+  .bottom {
+    border-top: 1px solid rgba(255,255,255,0.1); padding-top: 28px;
+    display: flex; justify-content: space-between; align-items: flex-end;
+  }
+  .meta { display: flex; gap: 44px; }
+  .meta-item { display: flex; flex-direction: column; gap: 4px; }
+  .meta-label { font-size: 11px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(232,228,220,0.32); }
+  .meta-value { font-size: 15.5px; font-weight: 500; color: rgba(232,228,220,0.70); }
+  .url { font-size: 14px; font-weight: 500; letter-spacing: 0.05em; color: rgba(201,169,110,0.5); }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="bg"></div>
+  <div class="overlay"></div>
+  <div class="glow"></div>
+  <div class="accent-bar"></div>
+  <div class="top">
+    <div class="logo-wrap">
+      <div class="logo-icon-clip"><img src="logo.png" alt="PureWave" /></div>
+      <div class="logo-text">
+        <span class="logo-name">PureWave</span>
+        <span class="logo-sub">Home Theatre Consultancy</span>
+      </div>
+    </div>
+    <span class="badge">Performance Upgrade</span>
+  </div>
+  <div class="middle">
+    <p class="track">On-Site &middot; Durban</p>
+    <h1 class="plan-name">The<br /><span class="gold">Tuning</span></h1>
+    <p class="tagline">Good equipment that still doesn&#39;t sound the way it should. This is where it changes.</p>
+    <div class="deliverables">
+      <div class="deliverable"><div class="dot"></div>Hands-on calibration that goes further than the basic AVR auto-setup</div>
+      <div class="deliverable"><div class="dot"></div>Subwoofer positioning, crossover tuning, and cleaner bass integration</div>
+      <div class="deliverable"><div class="dot"></div>A summary of what was adjusted and how it improved the listening experience</div>
+    </div>
+  </div>
+  <div class="bottom">
+    <div class="meta">
+      <div class="meta-item"><span class="meta-label">Pricing</span><span class="meta-value">Hourly rate, minimum booking</span></div>
+      <div class="meta-item"><span class="meta-label">Format</span><span class="meta-value">Half-day to full-day session</span></div>
+    </div>
+    <span class="url">purewaveacoustic.co.za</span>
+  </div>
+</div>
+</body>
+</html>
