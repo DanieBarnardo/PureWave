@@ -3,6 +3,7 @@
 @inject IIntakeSubmissionStore IntakeSubmissionStore
 @inject IIntakeNotificationService IntakeNotificationService
 @inject ILogger<Pages.Intake> Logger
+@inject IJSRuntime JS
 
 <PageTitle>PureWave | Start Your Room Brief Durban</PageTitle>
 <HeadContent>
@@ -544,7 +545,7 @@ else
         _editContext = new EditContext(Model);
     }
 
-    private void NextStep()
+    private async Task NextStep()
     {
         ShowStepErrors = false;
         _editContext.Validate();
@@ -561,17 +562,25 @@ else
         {
             CurrentStep++;
             ShowServiceModeWarning = false;
+            await ScrollToFormTop();
         }
     }
 
-    private void PreviousStep()
+    private async Task PreviousStep()
     {
         if (CurrentStep > 1)
         {
             CurrentStep--;
             ShowStepErrors = false;
             ShowServiceModeWarning = false;
+            await ScrollToFormTop();
         }
+    }
+
+    private async Task ScrollToFormTop()
+    {
+        await JS.InvokeVoidAsync("eval",
+            "document.querySelector('.form-progress')?.scrollIntoView({behavior:'smooth',block:'start'})");
     }
 
     private async Task HandleValidSubmit()
