@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Email Preview — PureWave Confirmation</title>
+<style>
+  body { margin: 0; padding: 40px 0; background: #e8e6e0; font-family: Arial, Helvetica, sans-serif; }
+</style>
+</head>
+<body>
+
+<table width="620" align="center" cellpadding="0" cellspacing="0" style="background:#ffffff; border-radius:4px; overflow:hidden; box-shadow:0 4px 24px rgba(0,0,0,0.12);">
+
+  <!-- Banner -->
+  <tr>
+    <td style="padding:0; background:#0b0b0b; text-align:center;">
+      <img src="http://localhost:7723/purewave-banner.png" width="620" alt="PureWave Home Theatre Consultancy"
+           style="display:block; width:100%; max-width:620px;" />
+    </td>
+  </tr>
+
+  <!-- Gold rule -->
+  <tr>
+    <td style="height:4px; background:linear-gradient(90deg,#0b0b0b 0%,#c9a96e 40%,#c9a96e 60%,#0b0b0b 100%); font-size:0; line-height:0;">&nbsp;</td>
+  </tr>
+
+  <!-- Greeting -->
+  <tr>
+    <td style="padding:40px 48px 28px; background:#0f0f0f;">
+      <p style="margin:0 0 6px; font-size:12px; font-weight:bold; letter-spacing:0.14em; text-transform:uppercase; color:#c9a96e;">Brief received</p>
+      <h1 style="margin:0 0 24px; font-size:26px; font-weight:bold; line-height:1.25; color:#e8e4dc; font-family:Georgia,serif;">
+        Thanks for sharing your room, {FirstName}. We have everything we need to get started.
+      </h1>
+      <p style="margin:0 0 16px; font-size:15px; line-height:1.7; color:rgba(232,228,220,0.72);">
+        Your brief has been received and will be reviewed shortly. There is no need to chase —
+        PureWave will be in touch via your preferred contact method once the brief has been read.
+      </p>
+      <p style="margin:0; font-size:15px; line-height:1.7; color:rgba(232,228,220,0.72);">
+        Here is a summary of what was captured:
+      </p>
+    </td>
+  </tr>
+
+  <!-- Summary card -->
+  <tr>
+    <td style="padding:0 48px; background:#0f0f0f;">
+      <table width="100%" cellpadding="0" cellspacing="0"
+             style="border:1px solid rgba(201,169,110,0.2); border-radius:8px; overflow:hidden;">
+        <tr>
+          <td style="padding:20px 24px; border-bottom:1px solid rgba(255,255,255,0.06);">
+            <span style="font-size:11px; font-weight:bold; letter-spacing:0.12em; text-transform:uppercase; color:rgba(232,228,220,0.35);">Plan</span><br/>
+            <span style="font-size:15px; font-weight:bold; color:#e8e4dc;">{InterestedPlan}</span>
+          </td>
+          <td style="padding:20px 24px; border-bottom:1px solid rgba(255,255,255,0.06); border-left:1px solid rgba(255,255,255,0.06);">
+            <span style="font-size:11px; font-weight:bold; letter-spacing:0.12em; text-transform:uppercase; color:rgba(232,228,220,0.35);">Service mode</span><br/>
+            <span style="font-size:15px; font-weight:bold; color:#e8e4dc;">{ServiceMode}</span>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:20px 24px; border-bottom:1px solid rgba(255,255,255,0.06);">
+            <span style="font-size:11px; font-weight:bold; letter-spacing:0.12em; text-transform:uppercase; color:rgba(232,228,220,0.35);">Project stage</span><br/>
+            <span style="font-size:15px; color:#e8e4dc;">{ProjectStage}</span>
+          </td>
+          <td style="padding:20px 24px; border-bottom:1px solid rgba(255,255,255,0.06); border-left:1px solid rgba(255,255,255,0.06);">
+            <span style="font-size:11px; font-weight:bold; letter-spacing:0.12em; text-transform:uppercase; color:rgba(232,228,220,0.35);">Budget band</span><br/>
+            <span style="font-size:15px; color:#e8e4dc;">{BudgetBand}</span>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2" style="padding:20px 24px;">
+            <span style="font-size:11px; font-weight:bold; letter-spacing:0.12em; text-transform:uppercase; color:rgba(232,228,220,0.35);">Contact preference</span><br/>
+            <span style="font-size:15px; color:#e8e4dc;">{ContactPreference}</span>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+
+  <!-- What happens next -->
+  <tr>
+    <td style="padding:36px 48px 8px; background:#0f0f0f;">
+      <p style="margin:0 0 20px; font-size:12px; font-weight:bold; letter-spacing:0.14em; text-transform:uppercase; color:#c9a96e;">What happens next</p>
+    </td>
+  </tr>
+
+  <tr>
+    <td style="padding:0 48px; background:#0f0f0f;">
+      <table width="100%" cellpadding="0" cellspacing="0">
+        <tr>
+          <td width="40" valign="top" style="padding:0 16px 24px 0;">
+            <div style="width:32px; height:32px; border-radius:50%; background:rgba(201,169,110,0.15); border:1px solid rgba(201,169,110,0.3); text-align:center; line-height:32px; font-size:13px; font-weight:bold; color:#c9a96e;">01</div>
+          </td>
+          <td valign="top" style="padding-bottom:24px;">
+            <p style="margin:0 0 4px; font-size:14px; font-weight:bold; color:#e8e4dc;">PureWave reviews your brief</p>
+            <p style="margin:0; font-size:14px; line-height:1.6; color:rgba(232,228,220,0.55);">Your brief is read and assessed — usually within 24 hours.</p>
+          </td>
+        </tr>
+        <tr>
+          <td width="40" valign="top" style="padding:0 16px 24px 0;">
+            <div style="width:32px; height:32px; border-radius:50%; background:rgba(201,169,110,0.15); border:1px solid rgba(201,169,110,0.3); text-align:center; line-height:32px; font-size:13px; font-weight:bold; color:#c9a96e;">02</div>
+          </td>
+          <td valign="top" style="padding-bottom:24px;">
+            <p style="margin:0 0 4px; font-size:14px; font-weight:bold; color:#e8e4dc;">You hear back via your preferred contact method</p>
+            <p style="margin:0; font-size:14px; line-height:1.6; color:rgba(232,228,220,0.55);">PureWave will reach out to discuss the right next step for your room.</p>
+          </td>
+        </tr>
+        <tr>
+          <td width="40" valign="top" style="padding:0 16px 16px 0;">
+            <div style="width:32px; height:32px; border-radius:50%; background:rgba(201,169,110,0.15); border:1px solid rgba(201,169,110,0.3); text-align:center; line-height:32px; font-size:13px; font-weight:bold; color:#c9a96e;">03</div>
+          </td>
+          <td valign="top" style="padding-bottom:16px;">
+            <p style="margin:0 0 4px; font-size:14px; font-weight:bold; color:#e8e4dc;">The consultation is scheduled around you</p>
+            <p style="margin:0; font-size:14px; line-height:1.6; color:rgba(232,228,220,0.55);">The session is arranged at a time that suits you, with the brief already in hand.</p>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+
+  <!-- Reply note -->
+  <tr>
+    <td style="padding:8px 48px 40px; background:#0f0f0f;">
+      <p style="margin:0; font-size:14px; line-height:1.7; color:rgba(232,228,220,0.45);">
+        If you have anything to add before then, just reply to this email.
+      </p>
+    </td>
+  </tr>
+
+  <!-- Gold rule -->
+  <tr>
+    <td style="height:1px; background:rgba(201,169,110,0.2); font-size:0; line-height:0;">&nbsp;</td>
+  </tr>
+
+  <!-- Footer -->
+  <tr>
+    <td style="padding:28px 48px; background:#080808;">
+      <table width="100%" cellpadding="0" cellspacing="0">
+        <tr>
+          <td>
+            <p style="margin:0 0 4px; font-size:14px; color:rgba(232,228,220,0.7);">Regards,</p>
+            <p style="margin:0 0 2px; font-size:15px; font-weight:bold; color:#e8e4dc;">Danie Barnardo</p>
+            <p style="margin:0 0 12px; font-size:13px; color:rgba(201,169,110,0.7);">PureWave Home Theatre Consultancy</p>
+            <p style="margin:0;">
+              <a href="https://www.purewaveacoustic.co.za"
+                 style="font-size:12px; color:rgba(201,169,110,0.5); text-decoration:none; letter-spacing:0.05em;">
+                purewaveacoustic.co.za
+              </a>
+            </p>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+
+</table>
+
+</body>
+</html>
