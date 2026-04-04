@@ -18,7 +18,10 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 builder.Services.AddAuthorization();
 
 builder.Services.AddRazorComponents()
-    .AddInteractiveServerComponents();
+    .AddInteractiveServerComponents(options =>
+    {
+        options.DisconnectedCircuitRetentionPeriod = TimeSpan.FromMinutes(3);
+    });
 
 builder.Services.AddScoped<IIntakeSubmissionStore, MySqlIntakeSubmissionStore>();
 builder.Services.AddScoped<IIntakeNotificationService, SmtpIntakeNotificationService>();

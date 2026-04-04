@@ -85,7 +85,19 @@
             }
         });
     </script>
-    <script src="@Assets["_framework/blazor.web.js"]"></script>
+    <script src="@Assets["_framework/blazor.web.js"]" autostart="false"></script>
+    <script>
+        Blazor.start({
+            circuit: {
+                reconnectionOptions: {
+                    maxRetries: 12,
+                    retryIntervalMilliseconds: function (previousAttempts) {
+                        return previousAttempts >= 6 ? 10000 : 2000;
+                    }
+                }
+            }
+        });
+    </script>
 </body>
 
 </html>
