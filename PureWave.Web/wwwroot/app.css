@@ -119,6 +119,45 @@ button.button-primary:hover {
     font-size: 1.06rem;
 }
 
+.hero-tagline {
+    margin: 1rem 0 0;
+    font-size: 0.95rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--pw-accent, #c9a96e);
+    opacity: 0.85;
+}
+
+.home-banner {
+    width: 100%;
+    max-width: 960px;
+    margin: 1.5rem auto 0;
+    padding: 0 1.5rem;
+}
+
+.home-banner img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 18px;
+}
+
+.hero-actions-strip {
+    display: flex;
+    gap: 0.9rem;
+    flex-wrap: wrap;
+    padding: 1.5rem 1.5rem 0;
+    max-width: 960px;
+    margin: 0 auto;
+}
+
+.stat-strip-section {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+}
+
 .hero-actions {
     display: flex;
     gap: 0.9rem;
