@@ -69,7 +69,7 @@
     margin-top: 1.1rem;
 }
 
-.brand-shell:has(.navbar-toggler:checked) ~ .nav-scrollable {
+.navbar-toggler:checked ~ .nav-scrollable {
     display: block;
 }
 

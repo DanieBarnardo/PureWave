@@ -1,3 +1,8 @@
+/* Mobile nav toggle — must live in app.css (unscoped) because :has() is mangled by Blazor's scoped CSS transformer */
+.brand-shell:has(.navbar-toggler:checked) ~ .nav-scrollable {
+    display: block;
+}
+
 :root {
     --pw-bg: #0d1422;
     --pw-panel: rgba(13, 21, 35, 0.84);
