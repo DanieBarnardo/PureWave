@@ -184,6 +184,20 @@ button.button-primary:hover {
     font-size: 0.95rem;
 }
 
+.remote-hero-image {
+    width: 100%;
+    max-width: 960px;
+    margin: 0 auto 0;
+    padding: 0 1.5rem;
+}
+
+.remote-hero-image img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 18px;
+}
+
 .section-block,
 .comparison-band,
 .page-intro,
