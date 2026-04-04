@@ -129,6 +129,17 @@ create table if not exists invoice_payments
     constraint fk_invoice_payments_invoice_id foreign key (invoice_id) references invoices(id) on delete cascade
 );
 
+create table if not exists project_reports
+(
+    id bigint not null auto_increment primary key,
+    project_id bigint not null unique,
+    plan_type varchar(60) not null,
+    content longtext not null,
+    generated_at datetime(6) not null default current_timestamp(6),
+    updated_at datetime(6) not null default current_timestamp(6),
+    constraint fk_project_reports_project_id foreign key (project_id) references projects(id) on delete cascade
+);
+
 update projects
 set status = case
     when status in ('Planned', 'On Hold') then 'Active'

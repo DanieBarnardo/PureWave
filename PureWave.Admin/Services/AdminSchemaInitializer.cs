@@ -43,6 +43,7 @@ public sealed class AdminSchemaInitializer(
         await EnsureColumnAsync(connection, "intake_submissions", "service_mode", "varchar(120) not null default ''", cancellationToken);
         await EnsureColumnAsync(connection, "intake_submissions", "service_format", "varchar(120) not null default ''", cancellationToken);
         await EnsureColumnAsync(connection, "intake_submissions", "client_id", "bigint null", cancellationToken);
+        await EnsureColumnAsync(connection, "projects", "plan_type", "varchar(60) not null default ''", cancellationToken);
     }
 
     private static async Task EnsureColumnAsync(

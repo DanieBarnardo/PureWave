@@ -28,4 +28,8 @@ public sealed class ProjectRecord
     public long? LatestInvoiceId { get; set; }
     public string LatestInvoiceNumber { get; set; } = string.Empty;
     public string LatestInvoiceStatus { get; set; } = string.Empty;
+
+    [StringLength(60)]
+    public string PlanType { get; set; } = string.Empty;
+    public string ClientName { get; set; } = string.Empty;
 }

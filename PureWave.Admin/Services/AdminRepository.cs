@@ -208,21 +208,6 @@ public sealed class AdminRepository(MySqlSettings settings)
         await using var connection = OpenConnection();
         await connection.OpenAsync();
         await using var cmd = new MySqlCommand("""
-            with invoice_summary as (
-                select
-                    i.project_id,
-                    count(*) as invoice_count,
-                    coalesce(sum(i.total_due), 0) as total_due,
-                    coalesce(sum(pay.amount_paid), 0) as total_paid,
-                    max(i.id) as latest_invoice_id
-                from invoices i
-                left join (
-                    select invoice_id, sum(amount) as amount_paid
-                    from invoice_payments
-                    group by invoice_id
-                ) pay on pay.invoice_id = i.id
-                group by i.project_id
-            )
             select p.id,
                    p.name,
                    c.full_name,
@@ -237,7 +222,21 @@ public sealed class AdminRepository(MySqlSettings settings)
             from projects p
             join clients c on c.id = p.client_id
             left join project_items pi on pi.project_id = p.id
-            left join invoice_summary inv on inv.project_id = p.id
+            left join (
+                select
+                    i.project_id,
+                    count(*) as invoice_count,
+                    coalesce(sum(i.total_due), 0) as total_due,
+                    coalesce(sum(pay.amount_paid), 0) as total_paid,
+                    max(i.id) as latest_invoice_id
+                from invoices i
+                left join (
+                    select invoice_id, sum(amount) as amount_paid
+                    from invoice_payments
+                    group by invoice_id
+                ) pay on pay.invoice_id = i.id
+                group by i.project_id
+            ) inv on inv.project_id = p.id
             where (@client_id = 0 or p.client_id = @client_id)
               and (
                   @status = '' or
@@ -275,21 +274,6 @@ public sealed class AdminRepository(MySqlSettings settings)
         await using var connection = OpenConnection();
         await connection.OpenAsync();
         await using var cmd = new MySqlCommand("""
-            with invoice_summary as (
-                select
-                    i.project_id,
-                    count(*) as invoice_count,
-                    coalesce(sum(i.total_due), 0) as total_due,
-                    coalesce(sum(pay.amount_paid), 0) as total_paid,
-                    max(i.id) as latest_invoice_id
-                from invoices i
-                left join (
-                    select invoice_id, sum(amount) as amount_paid
-                    from invoice_payments
-                    group by invoice_id
-                ) pay on pay.invoice_id = i.id
-                group by i.project_id
-            )
             select p.id,
                    p.client_id,
                    p.name,
@@ -308,9 +292,26 @@ public sealed class AdminRepository(MySqlSettings settings)
                    coalesce(inv.total_due, 0) - coalesce(inv.total_paid, 0),
                    latest.id,
                    latest.invoice_number,
-                   latest.status
+                   latest.status,
+                   coalesce(p.plan_type, ''),
+                   c.full_name
             from projects p
-            left join invoice_summary inv on inv.project_id = p.id
+            join clients c on c.id = p.client_id
+            left join (
+                select
+                    i.project_id,
+                    count(*) as invoice_count,
+                    coalesce(sum(i.total_due), 0) as total_due,
+                    coalesce(sum(pay.amount_paid), 0) as total_paid,
+                    max(i.id) as latest_invoice_id
+                from invoices i
+                left join (
+                    select invoice_id, sum(amount) as amount_paid
+                    from invoice_payments
+                    group by invoice_id
+                ) pay on pay.invoice_id = i.id
+                group by i.project_id
+            ) inv on inv.project_id = p.id
             left join invoices latest on latest.id = inv.latest_invoice_id
             where p.id = @id;
             """, connection);
@@ -336,7 +337,9 @@ public sealed class AdminRepository(MySqlSettings settings)
             OutstandingAmount = reader.GetDecimal(10),
             LatestInvoiceId = reader.IsDBNull(11) ? null : reader.GetInt64(11),
             LatestInvoiceNumber = reader.IsDBNull(12) ? string.Empty : reader.GetString(12),
-            LatestInvoiceStatus = reader.IsDBNull(13) ? string.Empty : reader.GetString(13)
+            LatestInvoiceStatus = reader.IsDBNull(13) ? string.Empty : reader.GetString(13),
+            PlanType = reader.GetString(14),
+            ClientName = reader.GetString(15)
         };
     }
 
@@ -347,8 +350,8 @@ public sealed class AdminRepository(MySqlSettings settings)
         if (project.Id == 0)
         {
             await using var insert = new MySqlCommand("""
-                insert into projects (client_id, name, description, status, start_date, due_date, updated_at)
-                values (@client_id, @name, @description, @status, @start_date, @due_date, utc_timestamp(6));
+                insert into projects (client_id, name, description, status, plan_type, start_date, due_date, updated_at)
+                values (@client_id, @name, @description, @status, @plan_type, @start_date, @due_date, utc_timestamp(6));
                 """, connection);
             AddProjectParams(insert, project);
             await insert.ExecuteNonQueryAsync();
@@ -361,6 +364,7 @@ public sealed class AdminRepository(MySqlSettings settings)
                 name = @name,
                 description = @description,
                 status = @status,
+                plan_type = @plan_type,
                 start_date = @start_date,
                 due_date = @due_date,
                 updated_at = utc_timestamp(6)
@@ -829,6 +833,7 @@ public sealed class AdminRepository(MySqlSettings settings)
         cmd.Parameters.AddWithValue("@name", project.Name);
         cmd.Parameters.AddWithValue("@description", project.Description ?? string.Empty);
         cmd.Parameters.AddWithValue("@status", project.Status);
+        cmd.Parameters.AddWithValue("@plan_type", project.PlanType ?? string.Empty);
         cmd.Parameters.AddWithValue("@start_date", project.StartDate.HasValue ? AsDateTime(project.StartDate.Value) : DBNull.Value);
         cmd.Parameters.AddWithValue("@due_date", project.DueDate.HasValue ? AsDateTime(project.DueDate.Value) : DBNull.Value);
     }
@@ -857,4 +862,95 @@ public sealed class AdminRepository(MySqlSettings settings)
     }
 
     private static DateTime AsDateTime(DateOnly value) => value.ToDateTime(TimeOnly.MinValue);
+
+    public async Task<ProjectIntakeData?> GetProjectIntakeAsync(long projectId)
+    {
+        await using var connection = OpenConnection();
+        await connection.OpenAsync();
+        await using var cmd = new MySqlCommand("""
+            select c.full_name,
+                   s.suburb_or_area,
+                   s.project_stage,
+                   s.budget_band,
+                   s.timeline,
+                   s.room_type,
+                   s.room_dimensions,
+                   s.primary_goals,
+                   s.existing_equipment,
+                   s.key_challenges,
+                   s.needs_acoustic_design,
+                   s.needs_calibration,
+                   s.needs_automation
+            from intake_submissions s
+            join clients c on c.id = s.client_id
+            join projects p on p.client_id = c.id
+            where p.id = @project_id
+            order by s.submitted_at desc
+            limit 1;
+            """, connection);
+        cmd.Parameters.AddWithValue("@project_id", projectId);
+        await using var reader = await cmd.ExecuteReaderAsync();
+        if (!await reader.ReadAsync())
+            return null;
+
+        return new ProjectIntakeData
+        {
+            ClientFullName = reader.GetString(0),
+            SuburbOrArea = reader.GetString(1),
+            ProjectStage = reader.GetString(2),
+            BudgetBand = reader.GetString(3),
+            Timeline = reader.GetString(4),
+            RoomType = reader.GetString(5),
+            RoomDimensions = reader.GetString(6),
+            PrimaryGoals = reader.GetString(7),
+            ExistingEquipment = reader.GetString(8),
+            KeyChallenges = reader.GetString(9),
+            NeedsAcousticDesign = reader.GetBoolean(10),
+            NeedsCalibration = reader.GetBoolean(11),
+            NeedsAutomation = reader.GetBoolean(12)
+        };
+    }
+
+    public async Task<ProjectReportRecord?> GetProjectReportAsync(long projectId)
+    {
+        await using var connection = OpenConnection();
+        await connection.OpenAsync();
+        await using var cmd = new MySqlCommand("""
+            select id, project_id, plan_type, content, generated_at, updated_at
+            from project_reports
+            where project_id = @project_id;
+            """, connection);
+        cmd.Parameters.AddWithValue("@project_id", projectId);
+        await using var reader = await cmd.ExecuteReaderAsync();
+        if (!await reader.ReadAsync())
+            return null;
+
+        return new ProjectReportRecord
+        {
+            Id = reader.GetInt64(0),
+            ProjectId = reader.GetInt64(1),
+            PlanType = reader.GetString(2),
+            Content = reader.GetString(3),
+            GeneratedAt = reader.GetDateTime(4).ToLocalTime(),
+            UpdatedAt = reader.GetDateTime(5).ToLocalTime()
+        };
+    }
+
+    public async Task SaveProjectReportAsync(ProjectReportRecord report)
+    {
+        await using var connection = OpenConnection();
+        await connection.OpenAsync();
+        await using var cmd = new MySqlCommand("""
+            insert into project_reports (project_id, plan_type, content, generated_at, updated_at)
+            values (@project_id, @plan_type, @content, utc_timestamp(6), utc_timestamp(6))
+            on duplicate key update
+                plan_type = @plan_type,
+                content = @content,
+                updated_at = utc_timestamp(6);
+            """, connection);
+        cmd.Parameters.AddWithValue("@project_id", report.ProjectId);
+        cmd.Parameters.AddWithValue("@plan_type", report.PlanType);
+        cmd.Parameters.AddWithValue("@content", report.Content);
+        await cmd.ExecuteNonQueryAsync();
+    }
 }

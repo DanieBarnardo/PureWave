@@ -27,6 +27,7 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped(sp => sp.GetRequiredService<IOptions<MySqlSettings>>().Value);
 builder.Services.AddScoped<AdminRepository>();
 builder.Services.AddSingleton<AdminSchemaInitializer>();
+builder.Services.AddSingleton<ReportTemplateService>();
 
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();

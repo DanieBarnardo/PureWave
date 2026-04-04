@@ -6,6 +6,12 @@
       "runtimeExecutable": "dotnet",
       "runtimeArgs": ["run", "--project", "PureWave.Web/PureWave.Web.csproj", "--launch-profile", "https"],
       "port": 7038
+    },
+    {
+      "name": "PureWave.Admin",
+      "runtimeExecutable": "dotnet",
+      "runtimeArgs": ["run", "--project", "PureWave.Admin/PureWave.Admin.csproj", "--launch-profile", "http"],
+      "port": 5185
     }
   ]
 }

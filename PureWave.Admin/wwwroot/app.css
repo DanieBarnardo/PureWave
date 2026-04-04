@@ -574,3 +574,55 @@ a {
         grid-template-columns: 1fr;
     }
 }
+
+/* Report page */
+.report-editor {
+    width: 100%;
+    min-height: 600px;
+    font-family: "Consolas", "Cascadia Code", monospace;
+    font-size: 0.85rem;
+    background: var(--panel-soft);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 1rem;
+    resize: vertical;
+    box-sizing: border-box;
+}
+
+.markdown-body {
+    line-height: 1.7;
+    color: var(--text);
+}
+
+.markdown-body h1 { font-size: 1.6rem; margin-top: 0; }
+.markdown-body h2 { font-size: 1.25rem; border-bottom: 1px solid var(--border); padding-bottom: 0.25rem; margin-top: 2rem; }
+.markdown-body h3 { font-size: 1rem; color: var(--gold); margin-top: 1.5rem; }
+.markdown-body table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.9rem; }
+.markdown-body th, .markdown-body td { border: 1px solid var(--border); padding: 0.4rem 0.75rem; text-align: left; }
+.markdown-body th { background: var(--panel-soft); }
+.markdown-body code { background: var(--panel-soft); padding: 0.15rem 0.35rem; border-radius: 3px; font-size: 0.85em; }
+.markdown-body pre { background: var(--panel-soft); padding: 1rem; border-radius: 6px; overflow-x: auto; }
+.markdown-body blockquote { border-left: 3px solid var(--gold); margin-left: 0; padding-left: 1rem; color: var(--muted); }
+.markdown-body hr { border: none; border-top: 1px solid var(--border); margin: 2rem 0; }
+.markdown-body ul, .markdown-body ol { padding-left: 1.5rem; }
+.markdown-body li { margin: 0.25rem 0; }
+.markdown-body p { margin: 0.5rem 0 1rem; }
+
+.report-meta { margin-top: 2rem; color: var(--muted); }
+
+.badge {
+    display: inline-block;
+    background: var(--gold-deep);
+    color: #fff;
+    font-size: 0.75rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 20px;
+    margin-top: 0.25rem;
+}
+
+@media print {
+    .report-content { color: #000; }
+    .markdown-body table, .markdown-body th, .markdown-body td { border-color: #ccc; }
+    .markdown-body h2 { border-bottom-color: #ccc; }
+}

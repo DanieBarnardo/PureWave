@@ -19,6 +19,7 @@ else
         </div>
         <div class="button-row">
             <button class="ghost-button" @onclick="SaveProjectAsync">Save project</button>
+            <a class="ghost-button" href="/projects/@ProjectId/report">@(HasReport ? "View report" : "Generate report")</a>
             <button class="primary-button" @onclick="CreateInvoiceAsync">Create invoice</button>
         </div>
     </section>
@@ -34,6 +35,13 @@ else
                 @foreach (var status in ProjectStates)
                 {
                     <option value="@status">@status</option>
+                }
+            </InputSelect></label>
+            <label>Plan type<InputSelect @bind-Value="Project.PlanType" class="form-control">
+                <option value="">— None —</option>
+                @foreach (var plan in ReportTemplateService.PlanTypes)
+                {
+                    <option value="@plan.Slug">@plan.Name</option>
                 }
             </InputSelect></label>
             <label>Start date<InputDate @bind-Value="Project.StartDate" class="form-control" /></label>
@@ -159,6 +167,7 @@ else
     private ProjectRecord? Project { get; set; }
     private List<ProjectItemRecord> Items { get; set; } = [];
     private ProjectItemRecord NewItem { get; set; } = new() { ItemCategory = "Consultancy" };
+    private bool HasReport { get; set; }
     private static readonly string[] ProjectStates = ["Active", "Closed", "Invoiced", "Paid", "Cancelled"];
     private static readonly string[] ItemCategories = ["Consultancy", "Labor", "Parts", "Material"];
 
@@ -166,6 +175,7 @@ else
     {
         Project = await Repository.GetProjectAsync(ProjectId);
         Items = (await Repository.GetProjectItemsAsync(ProjectId)).ToList();
+        HasReport = (await Repository.GetProjectReportAsync(ProjectId)) is not null;
         ResetNewItem();
     }
 

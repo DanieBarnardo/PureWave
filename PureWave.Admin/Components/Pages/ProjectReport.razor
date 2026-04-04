@@ -1,0 +1,174 @@
+@using Markdig
+@attribute [Authorize]
+@page "/projects/{ProjectId:long}/report"
+@rendermode InteractiveServer
+@inject AdminRepository Repository
+@inject ReportTemplateService TemplateService
+@inject NavigationManager Nav
+@inject IJSRuntime JS
+
+<PageTitle>PureWave Admin | Report</PageTitle>
+
+<style media="print">
+    .page-header, .report-toolbar, nav, .sidebar, footer { display: none !important; }
+    .report-body { padding: 0; max-width: 100%; }
+    .panel { box-shadow: none; border: none; }
+</style>
+
+@if (_project is null)
+{
+    <section class="panel"><p>Loading...</p></section>
+}
+else
+{
+    <section class="page-header">
+        <div>
+            <span class="eyebrow"><a href="/projects/@ProjectId">@_project.Name</a></span>
+            <h1>Consultation Report</h1>
+            @if (!string.IsNullOrWhiteSpace(_project.PlanType))
+            {
+                <span class="badge">@PlanLabel(_project.PlanType)</span>
+            }
+        </div>
+        <div class="button-row report-toolbar">
+            @if (_report is not null)
+            {
+                if (_isEditing)
+                {
+                    <button class="ghost-button" @onclick="CancelEditAsync">Cancel</button>
+                    <button class="primary-button" @onclick="SaveEditAsync">Save</button>
+                }
+                else
+                {
+                    <button class="ghost-button" @onclick="() => _isEditing = true">Edit</button>
+                    <button class="ghost-button" @onclick="DownloadAsync">Download .md</button>
+                    <button class="ghost-button" @onclick="PrintAsync">Print</button>
+                }
+            }
+        </div>
+    </section>
+
+    @if (!string.IsNullOrWhiteSpace(_error))
+    {
+        <section class="panel"><p class="error-message">@_error</p></section>
+    }
+
+    @if (_report is null)
+    {
+        <section class="panel">
+            <h2>No report yet</h2>
+            @if (string.IsNullOrWhiteSpace(_project.PlanType))
+            {
+                <p>Set a plan type on the <a href="/projects/@ProjectId">project page</a> before generating a report.</p>
+            }
+            else
+            {
+                <p>Generate a pre-filled report based on the client intake and plan template.</p>
+                <button class="primary-button" @onclick="GenerateAsync">Generate Report</button>
+            }
+        </section>
+    }
+    else if (_isEditing)
+    {
+        <section class="panel">
+            <p class="eyebrow">Editing markdown — changes save to the database, not the original template.</p>
+            <textarea class="report-editor" @bind="_editContent" @bind:event="oninput"></textarea>
+        </section>
+    }
+    else
+    {
+        <section class="panel report-body">
+            <div class="report-content markdown-body">
+                @((MarkupString)_renderedHtml)
+            </div>
+            <p class="report-meta eyebrow">
+                Generated @_report.GeneratedAt.ToString("d MMMM yyyy HH:mm")
+                @if (_report.UpdatedAt != _report.GeneratedAt)
+                {
+                    <span> · Last edited @_report.UpdatedAt.ToString("d MMMM yyyy HH:mm")</span>
+                }
+            </p>
+        </section>
+    }
+}
+
+@code {
+    [Parameter] public long ProjectId { get; set; }
+
+    private ProjectRecord? _project;
+    private ProjectReportRecord? _report;
+    private bool _isEditing;
+    private string _editContent = string.Empty;
+    private string _renderedHtml = string.Empty;
+    private string? _error;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        _project = await Repository.GetProjectAsync(ProjectId);
+        _report = await Repository.GetProjectReportAsync(ProjectId);
+        RenderReport();
+    }
+
+    private async Task GenerateAsync()
+    {
+        if (_project is null) return;
+        _error = null;
+
+        var intake = await Repository.GetProjectIntakeAsync(ProjectId);
+        var content = TemplateService.GenerateReport(
+            _project.PlanType,
+            intake?.ClientFullName ?? _project.ClientName,
+            intake);
+
+        var record = new ProjectReportRecord
+        {
+            ProjectId = ProjectId,
+            PlanType = _project.PlanType,
+            Content = content
+        };
+
+        await Repository.SaveProjectReportAsync(record);
+        _report = await Repository.GetProjectReportAsync(ProjectId);
+        RenderReport();
+    }
+
+    private void CancelEditAsync()
+    {
+        _isEditing = false;
+        _editContent = _report?.Content ?? string.Empty;
+    }
+
+    private async Task SaveEditAsync()
+    {
+        if (_report is null) return;
+        _report.Content = _editContent;
+        await Repository.SaveProjectReportAsync(_report);
+        _report = await Repository.GetProjectReportAsync(ProjectId);
+        _isEditing = false;
+        RenderReport();
+    }
+
+    private async Task DownloadAsync()
+    {
+        if (_report is null) return;
+        var filename = $"PureWave-Report-{_project?.Name ?? ProjectId.ToString()}.md"
+            .Replace(' ', '-');
+        await JS.InvokeVoidAsync("downloadTextFile", filename, _report.Content);
+    }
+
+    private async Task PrintAsync()
+    {
+        await JS.InvokeVoidAsync("window.print");
+    }
+
+    private void RenderReport()
+    {
+        if (_report is null) return;
+        _editContent = _report.Content;
+        var pipeline = new Markdig.MarkdownPipelineBuilder().UsePipeTables().UseGridTables().Build();
+        _renderedHtml = Markdig.Markdown.ToHtml(ReportTemplateService.FixHeaderLineBreaks(_report.Content), pipeline);
+    }
+
+    private static string PlanLabel(string slug) =>
+        ReportTemplateService.PlanTypes.FirstOrDefault(p => p.Slug == slug).Name ?? slug;
+}
