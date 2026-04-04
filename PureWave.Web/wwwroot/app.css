@@ -695,6 +695,13 @@ button.button-primary:hover {
     margin-bottom: 0.75rem;
 }
 
+.cta-reassurance {
+    font-size: 0.82rem;
+    color: var(--pw-muted);
+    margin: 0.6rem 0 0;
+    padding-left: 1.5rem;
+}
+
 .plan-cta {
     display: inline-block;
     margin-top: 1.2rem;
