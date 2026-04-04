@@ -752,6 +752,117 @@ button.button-primary:hover {
     text-decoration: underline;
 }
 
+/* ── Cookie notice ───────────────────────────────────────── */
+.cookie-notice {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 999;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.85rem 1.5rem;
+    background: rgba(10, 16, 28, 0.96);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(12px);
+    font-size: 0.875rem;
+    color: rgba(238, 242, 249, 0.82);
+    flex-wrap: wrap;
+}
+
+.cookie-notice p {
+    margin: 0;
+    flex: 1;
+}
+
+.cookie-notice a {
+    color: #d9a15c;
+    text-decoration: none;
+}
+
+.cookie-notice a:hover {
+    text-decoration: underline;
+}
+
+.cookie-dismiss {
+    flex-shrink: 0;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    color: #eef2f9;
+    padding: 0.35rem 1rem;
+    border-radius: 999px;
+    font-size: 0.82rem;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.cookie-dismiss:hover {
+    background: rgba(255, 255, 255, 0.14);
+}
+
+/* ── Privacy page ────────────────────────────────────────── */
+.privacy-updated {
+    font-size: 0.85rem;
+    color: var(--pw-muted);
+    margin-top: 0.5rem;
+}
+
+.privacy-body {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    max-width: 72ch;
+}
+
+.privacy-section h2 {
+    font-size: 1.05rem;
+    color: #d9a15c;
+    margin: 0 0 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-size: 0.8rem;
+}
+
+.privacy-section p,
+.privacy-section ul {
+    margin: 0 0 0.6rem;
+    color: rgba(238, 242, 249, 0.82);
+    line-height: 1.7;
+    font-size: 0.95rem;
+}
+
+.privacy-section ul {
+    padding-left: 1.4rem;
+}
+
+.privacy-section li {
+    margin-bottom: 0.35rem;
+}
+
+.privacy-section a {
+    color: #d9a15c;
+    text-decoration: none;
+}
+
+.privacy-section a:hover {
+    text-decoration: underline;
+}
+
+/* ── Sidebar privacy link ────────────────────────────────── */
+.sidebar-privacy {
+    display: block;
+    margin-top: 0.6rem;
+    font-size: 0.75rem;
+    color: rgba(238, 242, 249, 0.4);
+    text-decoration: none;
+}
+
+.sidebar-privacy:hover {
+    color: rgba(238, 242, 249, 0.7);
+}
+
 @media (max-width: 700px) {
     .contact-card-grid {
         grid-template-columns: 1fr;

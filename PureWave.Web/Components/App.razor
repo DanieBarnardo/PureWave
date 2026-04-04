@@ -24,7 +24,30 @@
 <body>
     <Routes />
     <ReconnectModal />
+
+    <div id="cookie-notice" class="cookie-notice" style="display:none" role="region" aria-label="Cookie notice">
+        <p>
+            This site uses Google Analytics to understand how it is used. No personal information is collected without your knowledge.
+            <a href="/privacy">Privacy policy</a>
+        </p>
+        <button id="cookie-dismiss" class="cookie-dismiss" aria-label="Dismiss cookie notice">Got it</button>
+    </div>
     <script>
+        // Cookie notice
+        (function () {
+            var notice = document.getElementById('cookie-notice');
+            var btn = document.getElementById('cookie-dismiss');
+            if (notice && !localStorage.getItem('pw-notice-dismissed')) {
+                notice.style.display = 'flex';
+            }
+            if (btn) {
+                btn.addEventListener('click', function () {
+                    localStorage.setItem('pw-notice-dismissed', '1');
+                    notice.style.display = 'none';
+                });
+            }
+        })();
+
         window.PureWave = window.PureWave || {};
 
         window.PureWave.scrollToTop = function () {
