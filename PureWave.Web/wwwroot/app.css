@@ -1401,7 +1401,7 @@ main {
         height: auto;
         grid-template-columns: 1fr;
         overflow: visible;
-        padding-top: 8.5rem; /* brand-shell + quick-nav strip + sidebar padding */
+        padding-top: 7rem; /* brand-shell + quick-nav strip + sidebar padding */
     }
 
     .sidebar {
@@ -1441,6 +1441,10 @@ main {
 
     .nav-scrollable {
         display: none;
+    }
+
+    .brand-shell {
+        margin-bottom: 0.5rem; /* tighter on mobile — desktop value (1.25rem) is too spacious in a compact header */
     }
 }
 
