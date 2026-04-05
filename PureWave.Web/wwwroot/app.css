@@ -1401,16 +1401,14 @@ main {
         height: auto;
         grid-template-columns: 1fr;
         overflow: visible;
-        padding-top: 6rem; /* fallback — overridden by JS measurement in NavMenu */
+        /* no padding-top needed — sidebar is sticky so it stays in flow */
     }
 
     .sidebar {
-        position: fixed;
+        position: sticky;
         top: 0;
-        left: 0;
-        right: 0;
         height: auto;
-        overflow-x: hidden; /* prevent pill strip from expanding page scroll width */
+        overflow-x: hidden;
         min-height: auto;
         border-right: none;
         border-bottom: 1px solid rgba(255, 255, 255, 0.08);

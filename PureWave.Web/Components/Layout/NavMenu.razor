@@ -1,22 +1,3 @@
-<script>
-(function () {
-    function syncPadding() {
-        if (window.innerWidth > 980) return;
-        var sidebar = document.querySelector('.sidebar');
-        var page = document.querySelector('.page');
-        if (sidebar && page) {
-            page.style.paddingTop = sidebar.offsetHeight + 'px';
-        }
-    }
-    // Run after layout — logo image must be loaded for correct height
-    window.addEventListener('load', syncPadding);
-    window.addEventListener('resize', syncPadding);
-    // Also run immediately in case DOM is already ready
-    if (document.readyState === 'complete') syncPadding();
-    else document.addEventListener('DOMContentLoaded', syncPadding);
-})();
-</script>
-
 <div class="brand-shell">
     <a class="brand-mark" href="/" aria-label="PureWave home">
         <img src="/images/purewave-minimal-banner.png" alt="PureWave Home Theatre Consultancy" />
