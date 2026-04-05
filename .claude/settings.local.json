@@ -1,7 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "Bash(dotnet build:*)"
+      "Read(//d/Development/**)",
+      "Bash(powershell.exe -Command \"cd ''D:\\\\Development\\\\PureWave\\\\.claude\\\\worktrees\\\\cranky-ishizaka''; git add .claude/settings.json .claude/settings.local.json; git commit -m ''Clean up .claude settings: shared vs local permissions:*)"
     ]
   }
 }
