@@ -1,7 +1,30 @@
 {
   "permissions": {
     "allow": [
-      "Bash(dotnet build:*)"
+      "Bash(dotnet build:*)",
+      "Read(//d/Development/**)",
+      "Bash(find . -maxdepth 3 -type f \\\\\\(-name package.json -o -name *.sln -o -name *.csproj -o -name tsconfig.json -o -name README.md -o -name Makefile -o -name .eslintrc* -o -name jest.config* -o -name vite.config* -o -name next.config* -o -name .cursorrules \\\\\\))",
+      "Bash(find . -maxdepth 1 -type f -name .*)",
+      "Bash(gh api:*)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" https://github.com/DanieBarnardo/AcousticTweaker)",
+      "Bash(curl -I https://api.github.com/repos/DanieBarnardo/AcousticTweaker)",
+      "Read(//mnt/d/Development/**)",
+      "Bash(cmd.exe /c \"dir D:\\\\Development\\\\AcousticTweaker /s /b 2>&1 | head -80\")",
+      "Bash(cmd.exe /c \"dir D:\\\\Development\\\\AcousticTweaker /s /b 2>&1\")",
+      "Bash(cmd.exe /c \"cd D:\\\\Development\\\\AcousticTweaker && git status 2>&1\")",
+      "Bash(powershell.exe -Command \"Get-ChildItem -Path ''D:\\\\Development\\\\AcousticTweaker'' -Recurse | Select-Object FullName\")",
+      "Bash(powershell.exe -Command \"cd ''D:\\\\Development\\\\AcousticTweaker''; git status 2>&1\")",
+      "Bash(powershell.exe -Command \"cd ''D:\\\\Development\\\\AcousticTweaker''; git init; git branch -M main\")",
+      "Bash(powershell.exe -Command \"cd ''D:\\\\Development\\\\AcousticTweaker''; git remote add origin https://github.com/DanieBarnardo/AcousticTweaker.git; git add CLAUDE.md ''Documents/Docs/AcousticTweaker Thoughts.md'' ''Documents/Docs/Home Theatre Consultancy Data Collection.md'' ''Documents/Questionaire/The Blueprint Questionnaire.md'' ''Documents/Questionaire/The Director Questionnaire.md'' ''Documents/Questionaire/The Procurement Report Questionnaire.md'' ''Documents/Questionaire/The Tuning Questionnaire.md'' ''Documents/Questionaire/The Virtual Blueprint Questionnaire.md''; git status\")",
+      "Bash(powershell.exe -Command \"cd ''D:\\\\Development\\\\AcousticTweaker''; git commit -m ''Initial commit: project docs and CLAUDE.md:*)",
+      "Bash(powershell.exe -Command \"cd ''D:\\\\Development\\\\AcousticTweaker''; git push -u origin main 2>&1\")",
+      "Bash(powershell.exe -Command \"cd ''D:\\\\Development\\\\AcousticTweaker''; git pull origin main --allow-unrelated-histories 2>&1\")",
+      "Bash(powershell.exe -Command \"cd ''D:\\\\Development\\\\PureWave\\\\.claude\\\\worktrees\\\\cranky-ishizaka''; git status\")",
+      "Bash(powershell.exe -Command \"cd ''D:\\\\Development\\\\PureWave\\\\.claude\\\\worktrees\\\\cranky-ishizaka''; git diff .claude/launch.json; git diff .claude/settings.local.json\")",
+      "Bash(powershell.exe -Command \"cd ''D:\\\\Development\\\\PureWave\\\\.claude\\\\worktrees\\\\cranky-ishizaka''; git diff .claude/launch.json\")",
+      "Bash(powershell.exe -Command \"cd ''D:\\\\Development\\\\PureWave\\\\.claude\\\\worktrees\\\\cranky-ishizaka''; git add .claude/settings.local.json .claude/launch.json; git commit -m ''Update .claude settings with session permissions and launch config:*)"
     ]
   }
 }
