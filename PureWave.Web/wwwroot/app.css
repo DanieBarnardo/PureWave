@@ -16,11 +16,17 @@
     --pw-shadow: 0 24px 70px rgba(3, 7, 14, 0.38);
 }
 
+html {
+    overflow-x: hidden; /* prevent any element from creating horizontal page scroll */
+}
+
 html, body {
     margin: 0;
     font-family: "Aptos", "Trebuchet MS", sans-serif;
     color: var(--pw-text);
     background: var(--pw-bg);
+    overflow-wrap: break-word; /* long words / URLs wrap rather than overflow */
+    word-break: break-word;
 }
 
 h1, h2, h3, h4 {
@@ -1416,7 +1422,7 @@ main {
 
     main {
         height: auto;
-        overflow: visible;
+        overflow-x: hidden;
     }
 
     .top-row {
