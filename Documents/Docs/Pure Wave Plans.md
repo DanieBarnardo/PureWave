@@ -65,11 +65,65 @@ This document summarizes the plans currently presented to clients on the PureWav
 - Creates a premium, intuitive room rather than a pile of premium products
 - Supports large-screen, high-fidelity rooms with long-term upgrade logic
 
+## 4. The Virtual Blueprint
+
+**Positioning:** Remote planning help for clients outside Durban who want expert direction before they buy or build.
+
+**Service track:** Remote
+
+**Best for:** Early-stage room planning, remote renovations, and clients who want to get layout, speaker positions, and wiring right from the start.
+
+**Pricing model:** Fixed remote consultation fee
+
+**Typical turnaround:** WhatsApp introduction, then a remote slot at the client’s convenience plus a written layout and wiring-priority report
+
+**What is included:**
+- A structured remote session focused on the room, goals, and budget
+- Guidance on seating, screen size, speaker positions, and the foundation for strong surround sound
+- A wiring-priority guide so future upgrades are easier and cleaner
+- A written plan the client can follow or hand to contractors
+
+**Client outcome:**
+- Gives clarity before the room starts taking shape
+- Avoids the common mistakes that ruin surround sound and future upgrade options
+- Brings PureWave planning to clients where an on-site visit is not practical
+
+## 5. The Procurement Report
+
+**Positioning:** Remote research and buying guidance for clients who want to choose equipment with confidence.
+
+**Service track:** Remote
+
+**Best for:** Clients who want honest buying advice, South African stock guidance, and a clear upgrade path for movies, music, and future expansion.
+
+**Pricing model:** Fixed report fee
+
+**Typical turnaround:** WhatsApp introduction, then a remote slot at the client’s convenience followed by research and a written report
+
+**What is included:**
+- A consultation slot to understand how the client listens, what they watch, and where they want the system to go
+- A shopping list with sensible options at different budget levels
+- Clear reasons for each recommendation so the client understands why something suits their room and goals
+- South African pricing and stock guidance where available
+
+**Client outcome:**
+- Helps buy equipment that will actually sound good in the space
+- Keeps every rand focused on a better movie night and a better music-listening experience
+- Stops mismatched systems full of regret buys
+
+---
+
 ## Summary
 
-PureWave’s plans are structured around three levels of engagement:
-- **The Blueprint** for early-stage strategy and planning
-- **The Tuning** for improving performance in an existing room
-- **The Director** for full design, coordination, and oversight on premium projects
+PureWave’s plans cover five levels of engagement across on-site and remote service tracks:
 
-Together, these plans position PureWave as an independent, performance-led consultancy focused on technical accuracy, practical upgrade logic, and premium home cinema outcomes.
+**On-Site**
+- **The Blueprint** — early-stage strategy and planning for new rooms or upgrades
+- **The Tuning** — performance calibration for existing rooms that should sound better
+- **The Director** — full design, coordination, and oversight for premium projects
+
+**Remote**
+- **The Virtual Blueprint** — planning and layout guidance for clients outside Durban
+- **The Procurement Report** — research-led buying advice and equipment selection
+
+Together these plans position PureWave as an independent, performance-led consultancy focused on technical accuracy, practical upgrade logic, and premium home cinema outcomes — whether on-site in KwaZulu-Natal or remotely across South Africa.
