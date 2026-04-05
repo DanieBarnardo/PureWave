@@ -154,6 +154,12 @@
 
 @media (max-width: 980px) {
     .brand-mark img {
-        max-width: 210px;
+        max-width: 180px;
+    }
+
+    .nav-scrollable {
+        max-height: calc(100vh - 5.8rem);
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
     }
 }

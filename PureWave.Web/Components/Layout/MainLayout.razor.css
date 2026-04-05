@@ -64,15 +64,23 @@ main {
         height: auto;
         grid-template-columns: 1fr;
         overflow: visible;
+        padding-top: 5.8rem; /* reserve space for fixed mobile header */
     }
 
     .sidebar {
-        position: relative;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
         height: auto;
         overflow: visible;
         min-height: auto;
         border-right: none;
         border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        z-index: 200;
+        padding: 0.85rem 0.95rem;
+        background: rgba(9, 13, 23, 0.97);
+        backdrop-filter: blur(20px);
     }
 
     main {
