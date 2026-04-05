@@ -1401,7 +1401,7 @@ main {
         height: auto;
         grid-template-columns: 1fr;
         overflow: visible;
-        padding-top: 7rem; /* brand-shell + quick-nav strip + sidebar padding */
+        padding-top: 6rem; /* fallback — overridden by JS measurement in NavMenu */
     }
 
     .sidebar {
